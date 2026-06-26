@@ -21,3 +21,5 @@ class Lesson(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     stack = relationship("Stack", back_populates="lessons")
+    exercises = relationship("Exercise", order_by="Exercise.order")
+    test = relationship("Test", uselist=False)
