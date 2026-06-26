@@ -1,3 +1,4 @@
+from models.chat_message import ChatMessage
 from models.course import Course
 from models.exercise import Exercise
 from models.lesson import Lesson
@@ -16,4 +17,5 @@ __all__ = [
     "Test",
     "UserProgress",
     "StackProgress",
+    "ChatMessage",
 ]

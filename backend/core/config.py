@@ -6,8 +6,8 @@ class Settings(BaseSettings):
 
     database_url: str
     redis_url: str = "redis://localhost:6379"
-    gemini_api_key: str = ""
     ollama_url: str = "http://localhost:11434"
+    ollama_model: str = "qwen2.5-coder"
     secret_key: str
     access_token_expire_minutes: int = 10080
     algorithm: str = "HS256"

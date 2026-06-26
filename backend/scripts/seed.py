@@ -248,6 +248,245 @@ padding и border — это самый предсказуемый способ 
                             ],
                         },
                     },
+                    {
+                        "title": "Flexbox: гибкая раскладка элементов",
+                        "slug": "css-flexbox",
+                        "order": 3,
+                        "content": """## Что такое Flexbox
+
+Flexbox (Flexible Box Layout) — модель CSS для расположения элементов в
+строку или столбец с гибким распределением свободного места. Включается на
+родительском элементе через `display: flex`.
+
+## Основные свойства контейнера
+
+```css
+.container {
+  display: flex;
+  flex-direction: row;       /* row | column | row-reverse | column-reverse */
+  justify-content: center;   /* выравнивание по главной оси */
+  align-items: center;       /* выравнивание по поперечной оси */
+  gap: 16px;                 /* расстояние между элементами */
+}
+```
+
+- `flex-direction` задаёт главную ось — строка или столбец
+- `justify-content` распределяет элементы вдоль главной оси (`flex-start`,
+  `center`, `space-between`, `space-around`)
+- `align-items` выравнивает элементы по поперечной оси (`stretch`, `center`,
+  `flex-start`, `flex-end`)
+
+## Свойства элементов
+
+```css
+.item {
+  flex-grow: 1;    /* насколько элемент растягивается, заполняя пространство */
+  flex-shrink: 1;  /* насколько элемент сжимается при нехватке места */
+  flex-basis: 200px; /* базовый размер элемента */
+}
+```
+
+Сокращённая запись: `flex: 1 1 200px;` (grow shrink basis).
+
+## Пример: карточки в ряд
+
+```css
+.cards {
+  display: flex;
+  gap: 20px;
+}
+.card {
+  flex: 1;
+}
+```
+
+Все `.card` займут равную часть доступной ширины `.cards`.""",
+                        "exercises": [
+                            {
+                                "type": ExerciseType.mcq,
+                                "question": "Какое свойство выравнивает элементы вдоль главной оси flex-контейнера?",
+                                "options": ["align-items", "justify-content", "flex-direction", "gap"],
+                                "answer": "justify-content",
+                                "explanation": "justify-content работает по главной оси, align-items — по поперечной.",
+                            },
+                            {
+                                "type": ExerciseType.open,
+                                "question": "Чем отличаются align-items и justify-content?",
+                                "answer": "justify-content выравнивает элементы по главной оси (направление flex-direction), align-items — по поперечной (перпендикулярной) оси.",
+                                "explanation": "Ключевое — разные оси выравнивания.",
+                            },
+                            {
+                                "type": ExerciseType.code,
+                                "question": "Напишите CSS для .row: flex-контейнер с элементами в ряд, расстоянием 12px и центрированием по обеим осям.",
+                                "answer": ".row { display: flex; justify-content: center; align-items: center; gap: 12px; }",
+                                "explanation": "Важны display: flex, justify-content: center, align-items: center.",
+                            },
+                        ],
+                        "test": {
+                            "pass_threshold": 70,
+                            "time_limit": 10,
+                            "questions": [
+                                {
+                                    "question": "Каким свойством включают flexbox на контейнере?",
+                                    "options": ["display: flex", "position: flex", "flex: on", "layout: flex"],
+                                    "answer": "display: flex",
+                                },
+                                {
+                                    "question": "Какое значение flex-direction располагает элементы в столбец?",
+                                    "options": ["row", "column", "wrap", "stack"],
+                                    "answer": "column",
+                                },
+                                {
+                                    "question": "Что задаёт flex-grow?",
+                                    "options": [
+                                        "Насколько элемент сжимается",
+                                        "Насколько элемент растягивается, заполняя свободное место",
+                                        "Цвет фона элемента",
+                                        "Порядок элемента",
+                                    ],
+                                    "answer": "Насколько элемент растягивается, заполняя свободное место",
+                                },
+                                {
+                                    "question": "Какое свойство задаёт расстояние между flex-элементами?",
+                                    "options": ["margin", "gap", "padding", "space"],
+                                    "answer": "gap",
+                                },
+                                {
+                                    "question": "Сокращённая запись flex: 1 1 200px означает:",
+                                    "options": [
+                                        "grow shrink basis",
+                                        "basis grow shrink",
+                                        "только basis",
+                                        "только grow",
+                                    ],
+                                    "answer": "grow shrink basis",
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        "title": "CSS Grid: раскладка по сетке",
+                        "slug": "css-grid",
+                        "order": 4,
+                        "content": """## Что такое CSS Grid
+
+CSS Grid — двумерная система раскладки: позволяет располагать элементы
+одновременно по строкам и столбцам, в отличие от одномерного Flexbox.
+
+## Создание сетки
+
+```css
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto;
+  gap: 16px;
+}
+```
+
+`repeat(3, 1fr)` создаёт три равные колонки. `fr` — доля свободного места
+(fraction unit).
+
+## Размещение элементов
+
+```css
+.item {
+  grid-column: 1 / 3;  /* занимает колонки с 1 по 2 */
+  grid-row: 1 / 2;
+}
+```
+
+## Адаптивная сетка без media-запросов
+
+```css
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+```
+
+`auto-fit` с `minmax` автоматически меняет количество колонок в зависимости
+от ширины контейнера — карточки минимум 200px, но растягиваются, заполняя
+ряд.
+
+## Когда Grid, а когда Flexbox
+
+Flexbox удобен для одномерных раскладок (навигация, ряд карточек). Grid —
+для двумерных макетов (страница целиком: шапка, сайдбар, контент, подвал).""",
+                        "exercises": [
+                            {
+                                "type": ExerciseType.mcq,
+                                "question": "Чем Grid принципиально отличается от Flexbox?",
+                                "options": [
+                                    "Grid двумерный (строки и колонки), Flexbox одномерный",
+                                    "Grid работает только в столбик",
+                                    "Flexbox новее, чем Grid",
+                                    "Между ними нет разницы",
+                                ],
+                                "answer": "Grid двумерный (строки и колонки), Flexbox одномерный",
+                                "explanation": "Grid управляет и строками, и колонками одновременно.",
+                            },
+                            {
+                                "type": ExerciseType.open,
+                                "question": "Что делает grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))?",
+                                "answer": "Создаёт адаптивное число колонок шириной минимум 200px, которые растягиваются и заполняют доступное пространство без media-запросов.",
+                                "explanation": "Ключевое — auto-fit + minmax дают адаптивность без @media.",
+                            },
+                            {
+                                "type": ExerciseType.code,
+                                "question": "Напишите CSS для .grid: сетка из 2 равных колонок с gap 10px.",
+                                "answer": ".grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }",
+                                "explanation": "Важны display: grid и repeat(2, 1fr).",
+                            },
+                        ],
+                        "test": {
+                            "pass_threshold": 70,
+                            "time_limit": 10,
+                            "questions": [
+                                {
+                                    "question": "Какая единица измерения означает долю свободного места в Grid?",
+                                    "options": ["px", "fr", "em", "%"],
+                                    "answer": "fr",
+                                },
+                                {
+                                    "question": "Какое свойство включает CSS Grid на контейнере?",
+                                    "options": ["display: grid", "grid: on", "layout: grid", "position: grid"],
+                                    "answer": "display: grid",
+                                },
+                                {
+                                    "question": "Что создаёт repeat(3, 1fr)?",
+                                    "options": [
+                                        "3 равные колонки",
+                                        "1 колонку шириной 3fr",
+                                        "3 строки",
+                                        "Ошибку синтаксиса",
+                                    ],
+                                    "answer": "3 равные колонки",
+                                },
+                                {
+                                    "question": "Для какой задачи Grid подходит лучше, чем Flexbox?",
+                                    "options": [
+                                        "Ряд кнопок в навигации",
+                                        "Двумерный макет всей страницы",
+                                        "Центрирование одного элемента",
+                                        "Анимация при наведении",
+                                    ],
+                                    "answer": "Двумерный макет всей страницы",
+                                },
+                                {
+                                    "question": "Что задаёт grid-column: 1 / 3?",
+                                    "options": [
+                                        "Элемент занимает колонки с 1 по 2",
+                                        "Элемент находится в 3 колонке",
+                                        "Элемент занимает 3 строки",
+                                        "Ошибка синтаксиса",
+                                    ],
+                                    "answer": "Элемент занимает колонки с 1 по 2",
+                                },
+                            ],
+                        },
+                    },
                 ],
             },
             {
@@ -466,6 +705,214 @@ function sumAll(...numbers) {
                             ],
                         },
                     },
+                    {
+                        "title": "Массивы и их методы",
+                        "slug": "js-arrays",
+                        "order": 3,
+                        "content": """## Массивы в JavaScript
+
+Массив — упорядоченная коллекция значений любого типа.
+
+```javascript
+const fruits = ["яблоко", "банан", "вишня"];
+fruits.length;       // 3
+fruits[0];            // "яблоко"
+```
+
+## Методы, не изменяющие массив
+
+```javascript
+const numbers = [1, 2, 3, 4, 5];
+
+numbers.map(n => n * 2);          // [2, 4, 6, 8, 10] — новый массив
+numbers.filter(n => n % 2 === 0); // [2, 4] — только чётные
+numbers.reduce((sum, n) => sum + n, 0); // 15 — свёртка к одному значению
+numbers.find(n => n > 3);         // 4 — первый подходящий элемент
+numbers.includes(3);              // true
+```
+
+`map`, `filter`, `reduce` — основные методы функционального стиля: они не
+меняют исходный массив, а возвращают новый результат.
+
+## Методы, изменяющие массив
+
+```javascript
+const arr = [1, 2, 3];
+arr.push(4);     // добавляет в конец, arr = [1, 2, 3, 4]
+arr.pop();       // удаляет последний элемент
+arr.splice(1, 1); // удаляет 1 элемент с индекса 1
+```
+
+## Деструктуризация и spread
+
+```javascript
+const [first, second] = fruits;
+const merged = [...fruits, "груша"]; // новый массив с добавленным элементом
+```""",
+                        "exercises": [
+                            {
+                                "type": ExerciseType.mcq,
+                                "question": "Какой метод массива возвращает новый массив с результатом применения функции к каждому элементу?",
+                                "options": ["filter", "map", "reduce", "forEach"],
+                                "answer": "map",
+                                "explanation": "map преобразует каждый элемент и возвращает новый массив той же длины.",
+                            },
+                            {
+                                "type": ExerciseType.open,
+                                "question": "Чем filter отличается от map?",
+                                "answer": "map преобразует каждый элемент в новый, возвращая массив той же длины; filter отбирает элементы по условию, возвращая массив, который может быть короче исходного.",
+                                "explanation": "Ключевое — map трансформирует, filter отбирает.",
+                            },
+                            {
+                                "type": ExerciseType.code,
+                                "question": "Используя reduce, посчитайте сумму массива numbers = [1, 2, 3, 4].",
+                                "answer": "const sum = numbers.reduce((acc, n) => acc + n, 0);",
+                                "explanation": "Важно использовать reduce с начальным значением 0.",
+                            },
+                        ],
+                        "test": {
+                            "pass_threshold": 70,
+                            "time_limit": 10,
+                            "questions": [
+                                {
+                                    "question": "Какой метод добавляет элемент в конец массива?",
+                                    "options": ["push", "pop", "shift", "unshift"],
+                                    "answer": "push",
+                                },
+                                {
+                                    "question": "Что возвращает filter?",
+                                    "options": [
+                                        "Новый массив с отфильтрованными элементами",
+                                        "Одно число",
+                                        "Изменённый исходный массив",
+                                        "true или false",
+                                    ],
+                                    "answer": "Новый массив с отфильтрованными элементами",
+                                },
+                                {
+                                    "question": "Какой метод сворачивает массив в одно значение?",
+                                    "options": ["map", "filter", "reduce", "find"],
+                                    "answer": "reduce",
+                                },
+                                {
+                                    "question": "Что делает spread-оператор [...arr]?",
+                                    "options": [
+                                        "Удаляет элементы массива",
+                                        "Разворачивает элементы массива, например для копирования",
+                                        "Сортирует массив",
+                                        "Превращает массив в строку",
+                                    ],
+                                    "answer": "Разворачивает элементы массива, например для копирования",
+                                },
+                                {
+                                    "question": "Какой метод изменяет исходный массив, удаляя элементы?",
+                                    "options": ["map", "splice", "filter", "find"],
+                                    "answer": "splice",
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        "title": "Работа с DOM",
+                        "slug": "js-dom",
+                        "order": 4,
+                        "content": """## Что такое DOM
+
+DOM (Document Object Model) — представление HTML-документа как дерева
+объектов, с которым можно взаимодействовать через JavaScript.
+
+## Поиск элементов
+
+```javascript
+document.getElementById("title");
+document.querySelector(".card");       // первый подходящий элемент
+document.querySelectorAll(".card");    // все подходящие элементы (NodeList)
+```
+
+`querySelector`/`querySelectorAll` принимают любой CSS-селектор и более
+универсальны, чем `getElementById`.
+
+## Изменение содержимого и стилей
+
+```javascript
+const title = document.querySelector("h1");
+title.textContent = "Новый заголовок";
+title.style.color = "blue";
+title.classList.add("active");
+```
+
+## Обработка событий
+
+```javascript
+const button = document.querySelector("button");
+button.addEventListener("click", () => {
+  console.log("Кнопка нажата");
+});
+```
+
+`addEventListener` — основной способ подписаться на событие (`click`,
+`input`, `submit` и т.д.), в отличие от устаревшего атрибута `onclick`.
+
+## Создание элементов
+
+```javascript
+const li = document.createElement("li");
+li.textContent = "Новый пункт";
+document.querySelector("ul").appendChild(li);
+```""",
+                        "exercises": [
+                            {
+                                "type": ExerciseType.mcq,
+                                "question": "Какой метод выбирает ВСЕ элементы, подходящие под CSS-селектор?",
+                                "options": ["querySelector", "querySelectorAll", "getElementById", "getElementsByName"],
+                                "answer": "querySelectorAll",
+                                "explanation": "querySelector возвращает только первый найденный элемент, querySelectorAll — все.",
+                            },
+                            {
+                                "type": ExerciseType.open,
+                                "question": "Как правильно подписаться на клик по кнопке и почему это лучше атрибута onclick?",
+                                "answer": "Через button.addEventListener('click', handler). Это позволяет добавлять несколько обработчиков на один элемент и разделяет HTML и логику JS.",
+                                "explanation": "Ключевое — addEventListener, разделение разметки и логики.",
+                            },
+                            {
+                                "type": ExerciseType.code,
+                                "question": "Найдите элемент с id 'app' и установите ему textContent равным 'Готово'.",
+                                "answer": "document.getElementById('app').textContent = 'Готово';",
+                                "explanation": "Важно использовать getElementById и textContent.",
+                            },
+                        ],
+                        "test": {
+                            "pass_threshold": 70,
+                            "time_limit": 10,
+                            "questions": [
+                                {
+                                    "question": "Что означает аббревиатура DOM?",
+                                    "options": ["Document Object Model", "Data Object Map", "Direct Output Method", "Document Order Markup"],
+                                    "answer": "Document Object Model",
+                                },
+                                {
+                                    "question": "Какой метод создаёт новый HTML-элемент?",
+                                    "options": ["document.createElement", "document.newElement", "document.makeElement", "document.addElement"],
+                                    "answer": "document.createElement",
+                                },
+                                {
+                                    "question": "Как добавить созданный элемент в DOM-дерево?",
+                                    "options": ["element.append()", "parent.appendChild(element)", "element.insert()", "document.add(element)"],
+                                    "answer": "parent.appendChild(element)",
+                                },
+                                {
+                                    "question": "Каким способом рекомендуют подписываться на события вместо атрибута onclick?",
+                                    "options": ["addEventListener", "onEvent", "bindClick", "setHandler"],
+                                    "answer": "addEventListener",
+                                },
+                                {
+                                    "question": "Какое свойство меняет текст внутри элемента?",
+                                    "options": ["innerHTML только", "textContent", "value всегда", "name"],
+                                    "answer": "textContent",
+                                },
+                            ],
+                        },
+                    },
                 ],
             },
         ],
@@ -676,6 +1123,242 @@ def sum(a: int, b: int) -> int:
                             ],
                         },
                     },
+                    {
+                        "title": "Списки, циклы и условия",
+                        "slug": "python-lists-loops",
+                        "order": 3,
+                        "content": """## Списки (list)
+
+```python
+fruits = ["яблоко", "банан", "вишня"]
+fruits.append("груша")    # добавить элемент
+fruits[0]                  # "яблоко"
+fruits[-1]                  # последний элемент
+len(fruits)                 # 4
+```
+
+## Цикл for
+
+```python
+for fruit in fruits:
+    print(fruit)
+
+for i in range(5):       # 0, 1, 2, 3, 4
+    print(i)
+```
+
+## List comprehension
+
+Питоничный способ построить список из другого списка:
+
+```python
+squares = [n ** 2 for n in range(5)]          # [0, 1, 4, 9, 16]
+evens = [n for n in range(10) if n % 2 == 0]  # [0, 2, 4, 6, 8]
+```
+
+## Условия
+
+```python
+age = 18
+if age >= 18:
+    print("Взрослый")
+elif age >= 13:
+    print("Подросток")
+else:
+    print("Ребёнок")
+```
+
+## while
+
+```python
+count = 0
+while count < 3:
+    print(count)
+    count += 1
+```""",
+                        "exercises": [
+                            {
+                                "type": ExerciseType.mcq,
+                                "question": "Что вернёт range(5) при использовании в цикле for?",
+                                "options": ["Числа от 1 до 5", "Числа от 0 до 4", "Числа от 0 до 5", "Список [5]"],
+                                "answer": "Числа от 0 до 4",
+                                "explanation": "range(5) генерирует 5 чисел начиная с 0: 0,1,2,3,4.",
+                            },
+                            {
+                                "type": ExerciseType.open,
+                                "question": "Что такое list comprehension и зачем его используют?",
+                                "answer": "Это компактный синтаксис для построения списка из итерируемого объекта в одну строку, например [n**2 for n in range(5)]. Используется для краткости и читаемости вместо обычного цикла с append.",
+                                "explanation": "Главное — краткая запись построения списка вместо цикла с append.",
+                            },
+                            {
+                                "type": ExerciseType.code,
+                                "question": "Напишите list comprehension, создающий список квадратов чисел от 1 до 5.",
+                                "answer": "squares = [n ** 2 for n in range(1, 6)]",
+                                "explanation": "Важно использовать range(1, 6), чтобы включить число 5.",
+                            },
+                        ],
+                        "test": {
+                            "pass_threshold": 70,
+                            "time_limit": 10,
+                            "questions": [
+                                {
+                                    "question": "Как получить последний элемент списка fruits?",
+                                    "options": ["fruits[-1]", "fruits[last]", "fruits.end()", "fruits[0]"],
+                                    "answer": "fruits[-1]",
+                                },
+                                {
+                                    "question": "Какой оператор добавляет элемент в конец списка?",
+                                    "options": [".append()", ".add()", ".push()", ".insert()"],
+                                    "answer": ".append()",
+                                },
+                                {
+                                    "question": "Что делает [n for n in range(10) if n % 2 == 0]?",
+                                    "options": [
+                                        "Возвращает все числа от 0 до 9",
+                                        "Возвращает только чётные числа от 0 до 9",
+                                        "Возвращает только нечётные числа",
+                                        "Вызывает ошибку",
+                                    ],
+                                    "answer": "Возвращает только чётные числа от 0 до 9",
+                                },
+                                {
+                                    "question": "Когда выполняется блок else в конструкции if/elif/else?",
+                                    "options": [
+                                        "Всегда",
+                                        "Когда ни одно условие if/elif не выполнилось",
+                                        "Только если if выполнился",
+                                        "Никогда не выполняется",
+                                    ],
+                                    "answer": "Когда ни одно условие if/elif не выполнилось",
+                                },
+                                {
+                                    "question": "Цикл while выполняется, пока...",
+                                    "options": [
+                                        "Условие истинно (True)",
+                                        "Условие ложно (False)",
+                                        "Ровно 10 раз",
+                                        "Список не пуст всегда",
+                                    ],
+                                    "answer": "Условие истинно (True)",
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        "title": "Классы и ООП в Python",
+                        "slug": "python-classes",
+                        "order": 4,
+                        "content": """## Объявление класса
+
+```python
+class User:
+    def __init__(self, name: str, age: int):
+        self.name = name
+        self.age = age
+
+    def greet(self) -> str:
+        return f"Привет, я {self.name}"
+
+user = User("Алиса", 25)
+print(user.greet())  # Привет, я Алиса
+```
+
+`__init__` — конструктор, вызывается автоматически при создании объекта.
+`self` — ссылка на сам объект, обязательный первый параметр методов.
+
+## Наследование
+
+```python
+class Admin(User):
+    def __init__(self, name: str, age: int, level: int):
+        super().__init__(name, age)
+        self.level = level
+
+    def greet(self) -> str:
+        return f"{super().greet()}, я админ уровня {self.level}"
+```
+
+`super()` обращается к методам родительского класса. `Admin` переопределяет
+`greet`, но всё равно может вызвать родительскую реализацию.
+
+## Атрибуты класса vs атрибуты экземпляра
+
+```python
+class Counter:
+    total = 0  # атрибут класса — общий для всех экземпляров
+
+    def __init__(self):
+        Counter.total += 1
+        self.id = Counter.total  # атрибут экземпляра — свой у каждого объекта
+```""",
+                        "exercises": [
+                            {
+                                "type": ExerciseType.mcq,
+                                "question": "Какой метод вызывается автоматически при создании объекта класса?",
+                                "options": ["__main__", "__init__", "__new__", "__call__"],
+                                "answer": "__init__",
+                                "explanation": "__init__ — конструктор, инициализирующий атрибуты нового объекта.",
+                            },
+                            {
+                                "type": ExerciseType.open,
+                                "question": "Зачем нужен super() в дочернем классе?",
+                                "answer": "Чтобы обратиться к методам родительского класса, например вызвать родительский __init__ или переопределённый метод, не дублируя его код.",
+                                "explanation": "Ключевое — доступ к реализации родителя без дублирования кода.",
+                            },
+                            {
+                                "type": ExerciseType.code,
+                                "question": "Напишите класс Animal с конструктором, принимающим name, и методом speak(), возвращающим f'{name} издаёт звук'.",
+                                "answer": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\n    def speak(self):\n        return f'{self.name} издаёт звук'",
+                                "explanation": "Важны __init__ с self.name и метод speak с self.",
+                            },
+                        ],
+                        "test": {
+                            "pass_threshold": 70,
+                            "time_limit": 10,
+                            "questions": [
+                                {
+                                    "question": "Что такое self в методах класса?",
+                                    "options": [
+                                        "Ссылка на родительский класс",
+                                        "Ссылка на сам объект (экземпляр)",
+                                        "Имя класса",
+                                        "Необязательный параметр",
+                                    ],
+                                    "answer": "Ссылка на сам объект (экземпляр)",
+                                },
+                                {
+                                    "question": "Как объявить, что класс Admin наследуется от User?",
+                                    "options": ["class Admin(User):", "class Admin extends User:", "class Admin -> User:", "class Admin use User:"],
+                                    "answer": "class Admin(User):",
+                                },
+                                {
+                                    "question": "Атрибут класса (объявленный без self) общий для...",
+                                    "options": [
+                                        "Только одного экземпляра",
+                                        "Всех экземпляров класса",
+                                        "Только дочерних классов",
+                                        "Ничего, это ошибка",
+                                    ],
+                                    "answer": "Всех экземпляров класса",
+                                },
+                                {
+                                    "question": "Что делает super().__init__(name, age) в дочернем классе?",
+                                    "options": [
+                                        "Создаёт новый объект родителя",
+                                        "Вызывает конструктор родительского класса для текущего объекта",
+                                        "Удаляет родительский класс",
+                                        "Ничего не делает",
+                                    ],
+                                    "answer": "Вызывает конструктор родительского класса для текущего объекта",
+                                },
+                                {
+                                    "question": "Как создать экземпляр класса User с аргументами 'Алиса', 25?",
+                                    "options": ["User('Алиса', 25)", "new User('Алиса', 25)", "User.create('Алиса', 25)", "User->new('Алиса', 25)"],
+                                    "answer": "User('Алиса', 25)",
+                                },
+                            ],
+                        },
+                    },
                 ],
             },
             {
@@ -872,6 +1555,243 @@ def read_item(item_id: int, detail: bool = False):
                                         "Передать через заголовки",
                                     ],
                                     "answer": "Передать skip и limit как query-параметры в URL",
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        "title": "Pydantic-модели и тело запроса",
+                        "slug": "fastapi-pydantic",
+                        "order": 3,
+                        "content": """## Зачем нужны Pydantic-модели
+
+Pydantic-модели описывают форму данных (JSON), которые приходят в теле
+запроса (`POST`, `PUT`, `PATCH`), и автоматически валидируют их.
+
+```python
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    price: float
+    in_stock: bool = True  # значение по умолчанию — поле необязательно
+
+@app.post("/items/")
+def create_item(item: Item):
+    return item
+```
+
+Если клиент отправит JSON без поля `price` или с `price` нечислового типа,
+FastAPI вернёт `422 Unprocessable Entity` с описанием ошибки — без единой
+строчки ручной валидации в коде.
+
+## Вложенные модели
+
+```python
+class Address(BaseModel):
+    city: str
+    street: str
+
+class User(BaseModel):
+    name: str
+    address: Address
+```
+
+FastAPI рекурсивно валидирует вложенные объекты и сам генерирует под них
+JSON Schema для документации в `/docs`.
+
+## response_model
+
+```python
+@app.post("/items/", response_model=Item)
+def create_item(item: Item) -> Item:
+    return item
+```
+
+`response_model` гарантирует, что в ответе будут только описанные поля —
+даже если функция вернёт объект с дополнительными атрибутами, лишние поля
+отфильтруются.""",
+                        "exercises": [
+                            {
+                                "type": ExerciseType.mcq,
+                                "question": "Что произойдёт, если в теле POST-запроса не передать обязательное поле Pydantic-модели?",
+                                "options": [
+                                    "Поле станет None автоматически",
+                                    "FastAPI вернёт ошибку валидации 422",
+                                    "Сервер упадёт с 500",
+                                    "Запрос выполнится без этого поля",
+                                ],
+                                "answer": "FastAPI вернёт ошибку валидации 422",
+                                "explanation": "Без значения по умолчанию поле обязательно — его отсутствие даёт 422.",
+                            },
+                            {
+                                "type": ExerciseType.open,
+                                "question": "Зачем использовать response_model в path operation?",
+                                "answer": "Чтобы гарантировать, что в ответе клиенту будут только описанные в модели поля, отфильтровав лишние, и чтобы FastAPI сгенерировал точную документацию ответа.",
+                                "explanation": "Ключевое — фильтрация полей ответа и точная документация.",
+                            },
+                            {
+                                "type": ExerciseType.code,
+                                "question": "Создайте Pydantic-модель Product с полями name: str и price: float, и эндпоинт POST /products принимающий её.",
+                                "answer": "class Product(BaseModel):\n    name: str\n    price: float\n\n@app.post('/products')\ndef create_product(product: Product):\n    return product",
+                                "explanation": "Важны корректные типы полей и параметр функции с аннотацией Product.",
+                            },
+                        ],
+                        "test": {
+                            "pass_threshold": 70,
+                            "time_limit": 10,
+                            "questions": [
+                                {
+                                    "question": "От какого класса наследуются Pydantic-модели в FastAPI?",
+                                    "options": ["BaseModel", "Model", "Schema", "DataModel"],
+                                    "answer": "BaseModel",
+                                },
+                                {
+                                    "question": "Поле с значением по умолчанию в Pydantic-модели становится:",
+                                    "options": ["Обязательным", "Необязательным", "Игнорируется", "Только для чтения"],
+                                    "answer": "Необязательным",
+                                },
+                                {
+                                    "question": "Может ли Pydantic-модель содержать другую модель как поле?",
+                                    "options": ["Нет, только примитивы", "Да, вложенные модели валидируются рекурсивно", "Только списки примитивов", "Только через Optional"],
+                                    "answer": "Да, вложенные модели валидируются рекурсивно",
+                                },
+                                {
+                                    "question": "Зачем нужен response_model?",
+                                    "options": [
+                                        "Чтобы ускорить запрос",
+                                        "Чтобы отфильтровать и задокументировать поля ответа",
+                                        "Чтобы заменить Pydantic на dict",
+                                        "Он обязателен для всех эндпоинтов",
+                                    ],
+                                    "answer": "Чтобы отфильтровать и задокументировать поля ответа",
+                                },
+                                {
+                                    "question": "В какой части запроса передаются данные, валидируемые Pydantic-моделью при POST?",
+                                    "options": ["В query-параметрах", "В пути URL", "В теле запроса (body)", "В заголовках"],
+                                    "answer": "В теле запроса (body)",
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        "title": "Dependency Injection в FastAPI",
+                        "slug": "fastapi-dependencies",
+                        "order": 4,
+                        "content": """## Что такое Depends
+
+`Depends` — механизм внедрения зависимостей в FastAPI: функция-зависимость
+выполняется перед основным обработчиком, и её результат передаётся как
+аргумент.
+
+```python
+from fastapi import Depends
+
+def get_query_token(token: str):
+    return token
+
+@app.get("/items/")
+def read_items(token: str = Depends(get_query_token)):
+    return {"token": token}
+```
+
+## Типичный пример: подключение к базе данных
+
+```python
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.get("/users/")
+def read_users(db: Session = Depends(get_db)):
+    return db.query(User).all()
+```
+
+Зависимость с `yield` гарантирует, что код после `yield` (закрытие сессии)
+выполнится всегда, даже если в обработчике произошла ошибка — похоже на
+`try/finally`.
+
+## Зависимости для авторизации
+
+```python
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    # декодирование токена, поиск пользователя
+    ...
+
+@app.get("/profile")
+def profile(user: User = Depends(get_current_user)):
+    return user
+```
+
+Так любой защищённый эндпоинт получает текущего пользователя одной строкой,
+а логика проверки токена не дублируется в каждом обработчике.""",
+                        "exercises": [
+                            {
+                                "type": ExerciseType.mcq,
+                                "question": "Когда выполняется функция-зависимость, переданная через Depends?",
+                                "options": [
+                                    "После выполнения основного обработчика",
+                                    "Перед выполнением основного обработчика",
+                                    "Только при ошибке",
+                                    "Никогда автоматически, нужно вызывать вручную",
+                                ],
+                                "answer": "Перед выполнением основного обработчика",
+                                "explanation": "FastAPI вызывает зависимость до path operation и передаёт результат как аргумент.",
+                            },
+                            {
+                                "type": ExerciseType.open,
+                                "question": "Почему зависимость get_db использует yield, а не return?",
+                                "answer": "yield позволяет выполнить код после передачи сессии (закрытие db.close()) после того, как обработчик завершит работу — гарантированно, даже при исключении, аналогично try/finally.",
+                                "explanation": "Ключевое — гарантированная очистка ресурсов после использования.",
+                            },
+                            {
+                                "type": ExerciseType.code,
+                                "question": "Напишите зависимость get_current_user(user: User = Depends(get_current_user)) для эндпоинта GET /me, возвращающего текущего пользователя.",
+                                "answer": "@app.get('/me')\ndef me(user: User = Depends(get_current_user)):\n    return user",
+                                "explanation": "Важно использовать Depends(get_current_user) как тип параметра эндпоинта.",
+                            },
+                        ],
+                        "test": {
+                            "pass_threshold": 70,
+                            "time_limit": 10,
+                            "questions": [
+                                {
+                                    "question": "Каким классом/функцией оборачивают зависимость в параметре эндпоинта?",
+                                    "options": ["Depends", "Inject", "Provide", "UseDependency"],
+                                    "answer": "Depends",
+                                },
+                                {
+                                    "question": "Зачем использовать Depends(get_db) вместо создания сессии прямо в обработчике?",
+                                    "options": [
+                                        "Это единственный способ создать сессию",
+                                        "Чтобы переиспользовать логику получения и закрытия сессии во всех эндпоинтах",
+                                        "Это ускоряет запросы к БД",
+                                        "Depends обязателен в FastAPI",
+                                    ],
+                                    "answer": "Чтобы переиспользовать логику получения и закрытия сессии во всех эндпоинтах",
+                                },
+                                {
+                                    "question": "Что используется в зависимости, чтобы гарантировать очистку ресурсов после запроса?",
+                                    "options": ["return", "yield", "raise", "pass"],
+                                    "answer": "yield",
+                                },
+                                {
+                                    "question": "Может ли одна зависимость зависеть от другой через Depends?",
+                                    "options": ["Нет, только одна зависимость на эндпоинт", "Да, зависимости можно вкладывать друг в друга", "Только для аутентификации", "Только при использовании middleware"],
+                                    "answer": "Да, зависимости можно вкладывать друг в друга",
+                                },
+                                {
+                                    "question": "Для чего обычно используют Depends(get_current_user)?",
+                                    "options": [
+                                        "Чтобы подключиться к Redis",
+                                        "Чтобы получить и проверить авторизованного пользователя в защищённом эндпоинте",
+                                        "Чтобы создать таблицу в БД",
+                                        "Чтобы сгенерировать документацию",
+                                    ],
+                                    "answer": "Чтобы получить и проверить авторизованного пользователя в защищённом эндпоинте",
                                 },
                             ],
                         },

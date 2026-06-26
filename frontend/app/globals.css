@@ -1,0 +1,97 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --background: #fafafa;
+  --foreground: #0a0a0f;
+  --card: #ffffff;
+  --card-border: rgba(10, 10, 15, 0.08);
+  --muted: #6b7280;
+  --primary: #7c3aed;
+  --primary-2: #ec4899;
+  --accent: #06b6d4;
+}
+
+.dark {
+  --background: #05050a;
+  --foreground: #f5f5f7;
+  --card: #0f0f17;
+  --card-border: rgba(255, 255, 255, 0.08);
+  --muted: #9ca3af;
+  --primary: #a78bfa;
+  --primary-2: #f472b6;
+  --accent: #22d3ee;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-border: var(--card-border);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-2: var(--primary-2);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+.gradient-text {
+  background-image: linear-gradient(135deg, var(--primary), var(--primary-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass-card {
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(16px);
+}
+
+.aurora-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.aurora-bg::before,
+.aurora-bg::after {
+  content: "";
+  position: absolute;
+  width: 60vmax;
+  height: 60vmax;
+  border-radius: 50%;
+  filter: blur(110px);
+  opacity: 0.35;
+}
+
+.aurora-bg::before {
+  background: var(--primary);
+  top: -20%;
+  left: -10%;
+}
+
+.aurora-bg::after {
+  background: var(--accent);
+  bottom: -25%;
+  right: -10%;
+}
+
+/* KaTeX & code blocks inside lesson content */
+.lesson-content pre {
+  border-radius: 0.75rem;
+  border: 1px solid var(--card-border);
+}
+
+.lesson-content code {
+  font-family: var(--font-mono), monospace;
+}

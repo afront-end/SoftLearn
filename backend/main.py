@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import auth, courses
+from routers import ai_chat, auth, courses, lessons, stacks
 
 app = FastAPI(title="SoftLearn API")
 
@@ -15,6 +15,9 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(courses.router)
+app.include_router(stacks.router)
+app.include_router(lessons.router)
+app.include_router(ai_chat.router)
 
 
 @app.get("/api/health")
