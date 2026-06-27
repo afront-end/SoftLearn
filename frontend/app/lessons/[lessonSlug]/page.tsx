@@ -73,7 +73,7 @@ export default function LessonPage() {
   return (
     <>
       <Navbar />
-      <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-8">
+      <main className="mx-auto w-full max-w-6xl min-w-0 flex-1 px-4 py-8 sm:px-6">
         <Link
           href={`/stacks/${lesson.stack_slug}`}
           className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground"
@@ -81,11 +81,11 @@ export default function LessonPage() {
           <ArrowLeft size={14} /> {lesson.stack_title}
         </Link>
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-[1fr_380px]">
           <motion.article
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card lesson-content rounded-2xl p-6 prose prose-sm max-w-none dark:prose-invert sm:p-8"
+            className="glass-card lesson-content min-w-0 rounded-2xl p-6 prose prose-sm max-w-none dark:prose-invert sm:p-8"
           >
             <h1 className="!mt-0 gradient-text text-2xl font-bold">{lesson.title}</h1>
             <ReactMarkdown
@@ -126,7 +126,7 @@ export default function LessonPage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="h-[70vh] lg:sticky lg:top-20 lg:h-[calc(100vh-6rem)]"
+            className="h-[70vh] min-w-0 lg:sticky lg:top-20 lg:h-[calc(100vh-6rem)]"
           >
             <AiChat lessonSlug={lessonSlug} />
           </motion.div>

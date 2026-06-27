@@ -95,3 +95,21 @@ def complete_lesson(db: Session, user_id: UUID, lesson_id: UUID) -> UserProgress
     db.commit()
     db.refresh(progress)
     return progress
+
+
+def count_completed_lessons(db: Session, user_id: UUID, lesson_ids: list[UUID]) -> int:
+    if not lesson_ids:
+        return 0
+    return (
+        db.query(UserProgress)
+        .filter(
+            UserProgress.user_id == user_id,
+            UserProgress.lesson_id.in_(lesson_ids),
+            UserProgress.status == ProgressStatus.completed,
+        )
+        .count()
+    )
+
+
+def get_all_stack_progress(db: Session, user_id: UUID) -> list[StackProgress]:
+    return db.query(StackProgress).filter(StackProgress.user_id == user_id).all()

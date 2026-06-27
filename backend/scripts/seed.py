@@ -1800,6 +1800,14 @@ def profile(user: User = Depends(get_current_user)):
             },
         ],
     },
+    {
+        "title": "Fullstack разработчик",
+        "slug": "fullstack",
+        "description": "Frontend + Backend вместе: от вёрстки до API. Стеки этого направления — общие с курсами Frontend и Backend, прогресс синхронизирован.",
+        "icon": "🧩",
+        "order": 3,
+        "stacks": [],
+    },
 ]
 
 

@@ -154,6 +154,31 @@ export interface PlacementResultOut {
   completed_at: string;
 }
 
+export interface CourseProgressOut {
+  course_id: string;
+  course_title: string;
+  course_slug: string;
+  course_icon: string | null;
+  stacks_completed: number;
+  stacks_total: number;
+  lessons_completed: number;
+  lessons_total: number;
+}
+
+export interface ProgressOverviewOut {
+  courses: CourseProgressOut[];
+  stacks_completed_total: number;
+  lessons_completed_total: number;
+}
+
+export interface StackProgressEntryOut {
+  course_title: string;
+  course_slug: string;
+  stack_title: string;
+  stack_slug: string;
+  status: string;
+}
+
 export const api = {
   register: (data: { email: string; password: string; name: string }) =>
     request<UserOut>("/api/auth/register", { method: "POST", body: JSON.stringify(data) }),
@@ -187,6 +212,10 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ answers }),
     }),
+
+  getProgressOverview: () => request<ProgressOverviewOut>("/api/progress"),
+
+  getProgressStacks: () => request<StackProgressEntryOut[]>("/api/progress/stacks"),
 
   getExercises: (lessonSlug: string) => request<ExerciseOut[]>(`/api/lessons/${lessonSlug}/exercises`),
 

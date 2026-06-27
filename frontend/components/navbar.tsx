@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Sparkles } from "lucide-react";
+import { LayoutDashboard, LogOut, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -19,22 +19,34 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-20 border-b border-card-border bg-background/70 backdrop-blur-md">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
         <Link href="/" className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary-2">
             <Sparkles size={16} className="text-white" />
           </div>
-          <span className="font-semibold">SoftLearn</span>
+          <span className="hidden font-semibold sm:inline">SoftLearn</span>
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {user && (
+            <Link
+              href="/dashboard"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-card-border text-muted transition-colors hover:text-foreground sm:h-auto sm:w-auto sm:gap-1.5 sm:px-3 sm:py-1.5"
+              aria-label="Личный кабинет"
+            >
+              <LayoutDashboard size={14} />
+              <span className="hidden text-sm sm:inline">Кабинет</span>
+            </Link>
+          )}
           <ThemeToggle />
           {user ? (
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1.5 rounded-full border border-card-border px-3 py-1.5 text-sm text-muted transition-colors hover:text-foreground"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-card-border text-muted transition-colors hover:text-foreground sm:h-auto sm:w-auto sm:gap-1.5 sm:px-3 sm:py-1.5"
+              aria-label="Выйти"
             >
-              <LogOut size={14} /> Выйти
+              <LogOut size={14} />
+              <span className="hidden text-sm sm:inline">Выйти</span>
             </button>
           ) : (
             <Link

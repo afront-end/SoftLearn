@@ -13,6 +13,25 @@ from schemas.stack import StackOut, StackWithProgress
 COURSES_CACHE_KEY = "courses:list"
 COURSES_CACHE_TTL = 300
 
+# "Fullstack" — витрина без собственных стеков: объединяет стеки Frontend и Backend,
+# прогресс при этом всё равно общий (StackProgress хранится по stack_id, а не по курсу).
+COMBINED_COURSE_SLUGS: dict[str, list[str]] = {
+    "fullstack": ["frontend", "backend"],
+}
+
+
+def get_stacks_for_course(db: Session, course: Course) -> list:
+    source_slugs = COMBINED_COURSE_SLUGS.get(course.slug)
+    if not source_slugs:
+        return course_repo.get_stacks_for_course(db, course.id)
+
+    stacks = []
+    for slug in source_slugs:
+        source_course = course_repo.get_by_slug(db, slug)
+        if source_course:
+            stacks.extend(course_repo.get_stacks_for_course(db, source_course.id))
+    return stacks
+
 
 def list_courses(db: Session) -> list[CourseOut]:
     cached = redis_client.get(COURSES_CACHE_KEY)
@@ -34,7 +53,7 @@ def get_course_with_stacks(db: Session, slug: str, user_id: UUID) -> CourseWithS
     if not course:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Курс не найден")
 
-    stacks = course_repo.get_stacks_for_course(db, course.id)
+    stacks = get_stacks_for_course(db, course)
     progress_map = progress_repo.get_stack_progress_map(db, user_id, [s.id for s in stacks])
 
     if stacks and not progress_map:

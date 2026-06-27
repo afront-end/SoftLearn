@@ -2,6 +2,7 @@ import uuid
 
 from sqlalchemy import Column, DateTime, Enum, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 from core.database import Base
 from models.progress import ProgressStatus
@@ -15,3 +16,5 @@ class StackProgress(Base):
     stack_id = Column(UUID(as_uuid=True), ForeignKey("stacks.id"), nullable=False)
     status = Column(Enum(ProgressStatus), default=ProgressStatus.locked, nullable=False)
     unlocked_at = Column(DateTime(timezone=True))
+
+    stack = relationship("Stack")

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import ai_chat, auth, courses, exercises, lessons, onboarding, placement, stacks, tests
+from routers import ai_chat, auth, courses, exercises, lessons, onboarding, placement, progress, stacks, tests
 
 app = FastAPI(title="SoftLearn API")
 
@@ -22,6 +22,7 @@ app.include_router(exercises.router)
 app.include_router(tests.router)
 app.include_router(onboarding.router)
 app.include_router(placement.router)
+app.include_router(progress.router)
 
 
 @app.get("/api/health")
