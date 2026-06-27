@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Code2, Loader2, Sparkles } from "lucide-react";
+import { ArrowRight, Code2, GraduationCap, Loader2, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Navbar } from "@/components/navbar";
@@ -10,7 +11,9 @@ import { api, ApiError, CourseOut } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 
 export default function Home() {
+  const router = useRouter();
   const token = useAuthStore((s) => s.token);
+  const user = useAuthStore((s) => s.user);
   const [courses, setCourses] = useState<CourseOut[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,6 +23,12 @@ export default function Home() {
       .then(setCourses)
       .catch((err) => setError(err instanceof ApiError ? err.message : "Не удалось загрузить курсы"));
   }, []);
+
+  useEffect(() => {
+    if (token && user && !user.onboarded) {
+      router.push("/onboarding");
+    }
+  }, [token, user, router]);
 
   return (
     <>
@@ -113,6 +122,14 @@ export default function Home() {
                     Перейти <ArrowRight size={14} />
                   </span>
                 </Link>
+                {user?.experienced && (
+                  <Link
+                    href={`/placement/${course.slug}`}
+                    className="mt-2 flex items-center justify-center gap-1.5 rounded-xl border border-card-border px-3 py-2 text-xs font-medium text-muted transition-colors hover:border-primary/40 hover:text-primary"
+                  >
+                    <GraduationCap size={14} /> Пройти вступительный тест по этому направлению
+                  </Link>
+                )}
               </motion.div>
             ))}
           </div>

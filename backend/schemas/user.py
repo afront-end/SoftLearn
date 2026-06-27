@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -19,6 +20,8 @@ class UserOut(BaseModel):
     id: uuid.UUID
     email: EmailStr
     name: str
+    onboarded: bool
+    experienced: Optional[bool] = None
     created_at: datetime
 
     class Config:
@@ -28,3 +31,7 @@ class UserOut(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+
+class OnboardingIn(BaseModel):
+    experienced: bool

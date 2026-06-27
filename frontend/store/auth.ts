@@ -5,6 +5,8 @@ export interface AuthUser {
   id: string;
   email: string;
   name: string;
+  onboarded: boolean;
+  experienced: boolean | null;
 }
 
 interface AuthState {

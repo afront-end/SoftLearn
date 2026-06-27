@@ -34,6 +34,21 @@ def complete_stack(db: Session, user_id: UUID, stack_id: UUID) -> None:
         db.commit()
 
 
+def set_stack_status(db: Session, user_id: UUID, stack_id: UUID, status: ProgressStatus) -> StackProgress:
+    row = (
+        db.query(StackProgress)
+        .filter(StackProgress.user_id == user_id, StackProgress.stack_id == stack_id)
+        .first()
+    )
+    if not row:
+        row = StackProgress(user_id=user_id, stack_id=stack_id)
+        db.add(row)
+    row.status = status
+    db.commit()
+    db.refresh(row)
+    return row
+
+
 def get_lesson_progress_map(db: Session, user_id: UUID, lesson_ids: list[UUID]) -> dict[UUID, UserProgress]:
     rows = (
         db.query(UserProgress)
@@ -65,6 +80,18 @@ def mark_lesson_read(db: Session, user_id: UUID, lesson_id: UUID) -> UserProgres
         progress = UserProgress(user_id=user_id, lesson_id=lesson_id, status=ProgressStatus.in_progress)
         db.add(progress)
     progress.lesson_read = True
+    db.commit()
+    db.refresh(progress)
+    return progress
+
+
+def complete_lesson(db: Session, user_id: UUID, lesson_id: UUID) -> UserProgress:
+    progress = get_lesson_progress(db, user_id, lesson_id)
+    if not progress:
+        progress = UserProgress(user_id=user_id, lesson_id=lesson_id)
+        db.add(progress)
+    progress.practice_done = True
+    progress.status = ProgressStatus.completed
     db.commit()
     db.refresh(progress)
     return progress

@@ -14,3 +14,12 @@ def get_by_slug(db: Session, slug: str) -> Course | None:
 
 def get_stacks_for_course(db: Session, course_id) -> list[Stack]:
     return db.query(Stack).filter(Stack.course_id == course_id).order_by(Stack.order).all()
+
+
+def get_next_stack(db: Session, stack: Stack) -> Stack | None:
+    return (
+        db.query(Stack)
+        .filter(Stack.course_id == stack.course_id, Stack.order > stack.order)
+        .order_by(Stack.order)
+        .first()
+    )

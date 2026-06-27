@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379"
     ollama_url: str = "http://localhost:11434"
     ollama_model: str = "qwen2.5-coder"
+    ollama_embedding_model: str = "nomic-embed-text"
     secret_key: str
     access_token_expire_minutes: int = 10080
     algorithm: str = "HS256"

@@ -9,7 +9,7 @@ from models.chat_message import ChatRole
 from models.user import User
 from repositories import chat_repo, lesson_repo
 from schemas.chat import ChatMessageIn, ChatMessageOut
-from services import auth_service, ollama_service
+from services import auth_service, ollama_service, rag_service
 
 router = APIRouter(prefix="/api/chat", tags=["ai_chat"])
 
@@ -56,10 +56,17 @@ async def chat(
     chat_repo.add_message(db, current_user.id, lesson.id, ChatRole.user, payload.message)
     history.append({"role": "user", "content": payload.message})
 
+    try:
+        rag_chunks = await rag_service.retrieve_context(db, payload.message, lesson.id)
+    except Exception:
+        rag_chunks = []
+
     async def event_stream():
         full_reply = ""
         try:
-            async for piece in ollama_service.stream_chat(lesson.title, lesson.content or "", history):
+            async for piece in ollama_service.stream_chat(
+                lesson.title, lesson.content or "", history, rag_chunks=rag_chunks
+            ):
                 full_reply += piece
                 yield f"data: {json.dumps({'content': piece}, ensure_ascii=False)}\n\n"
         finally:

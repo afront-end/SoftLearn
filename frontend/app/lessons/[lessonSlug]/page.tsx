@@ -97,9 +97,12 @@ export default function LessonPage() {
 
             <div className="mt-8 flex items-center justify-between border-t border-card-border pt-6">
               {lesson.lesson_read ? (
-                <span className="flex items-center gap-1.5 text-sm font-medium text-emerald-500">
-                  <CheckCircle2 size={16} /> Урок прочитан
-                </span>
+                <button
+                  onClick={() => router.push(`/lessons/${lessonSlug}/practice`)}
+                  className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-2 px-4 py-2 text-sm font-medium text-white"
+                >
+                  <CheckCircle2 size={14} /> К практике
+                </button>
               ) : (
                 <button
                   onClick={handleMarkRead}
