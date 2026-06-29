@@ -25,19 +25,9 @@ RAG_SECTION_TEMPLATE = """
 """
 
 
-async def stream_chat(
-    lesson_title: str,
-    lesson_content: str,
-    history: list[dict[str, str]],
-    rag_chunks: list[str] | None = None,
+async def stream_with_system_prompt(
+    system_prompt: str, history: list[dict[str, str]]
 ) -> AsyncIterator[str]:
-    rag_section = ""
-    if rag_chunks:
-        rag_section = RAG_SECTION_TEMPLATE.format(chunks="\n---\n".join(rag_chunks))
-
-    system_prompt = SYSTEM_PROMPT_TEMPLATE.format(
-        lesson_title=lesson_title, lesson_content=lesson_content or "", rag_section=rag_section
-    )
     messages = [{"role": "system", "content": system_prompt}, *history]
 
     async with httpx.AsyncClient(timeout=120.0) as client:
@@ -56,6 +46,65 @@ async def stream_chat(
                     yield content
                 if chunk.get("done"):
                     break
+
+
+async def stream_chat(
+    lesson_title: str,
+    lesson_content: str,
+    history: list[dict[str, str]],
+    rag_chunks: list[str] | None = None,
+) -> AsyncIterator[str]:
+    rag_section = ""
+    if rag_chunks:
+        rag_section = RAG_SECTION_TEMPLATE.format(chunks="\n---\n".join(rag_chunks))
+
+    system_prompt = SYSTEM_PROMPT_TEMPLATE.format(
+        lesson_title=lesson_title, lesson_content=lesson_content or "", rag_section=rag_section
+    )
+    async for piece in stream_with_system_prompt(system_prompt, history):
+        yield piece
+
+
+ASSISTANT_SYSTEM_PROMPT = """Ты AI-помощник образовательной платформы SoftLearn.
+
+О платформе: SoftLearn — структурированный курс для самоучек-программистов.
+Иерархия: Направление (Frontend/Backend/Fullstack/Data&AI/Mobile/DevOps/QA) → Стек (например HTML&CSS, JavaScript) → Урок
+(Объяснение → Практика → Тест-барьер). Стек открывается только после сдачи теста предыдущего. Есть вступительный
+тест и Career Path Quiz, которые помогают выбрать направление и уровень.
+
+ТВОЯ ЗАДАЧА: помогать пользователю с вопросами о том, как устроена платформа SoftLearn, как проходят уроки,
+тесты и практика, а также объяснять в общих чертах, что такое IT-направления (Frontend, Backend, Fullstack,
+Data&AI, Mobile, DevOps, QA), чем они отличаются и кому подходят.
+
+СТРОГИЕ ПРАВИЛА:
+- Отвечай ТОЛЬКО на вопросы про платформу SoftLearn и про IT-направления в общих чертах
+- НИКОГДА не решай и не объясняй решения конкретных задач, примеров кода или вопросов из практики/тестов
+  — если просят решить задачу, вежливо откажись и предложи использовать AI-чат внутри урока
+- Если вопрос не по теме платформы или IT — вежливо объясни, что отвечаешь только по теме SoftLearn и IT-направлений
+- Отвечай кратко, дружелюбно, на русском языке"""
+
+
+async def stream_platform_chat(history: list[dict[str, str]]) -> AsyncIterator[str]:
+    async for piece in stream_with_system_prompt(ASSISTANT_SYSTEM_PROMPT, history):
+        yield piece
+
+
+async def complete(system_prompt: str, user_prompt: str) -> str:
+    async with httpx.AsyncClient(timeout=120.0) as client:
+        response = await client.post(
+            f"{settings.ollama_url}/api/chat",
+            json={
+                "model": settings.ollama_model,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                "stream": False,
+            },
+        )
+        response.raise_for_status()
+        data = response.json()
+    return data.get("message", {}).get("content", "").strip()
 
 
 JUDGE_PROMPT_TEMPLATE = """Ты проверяешь ответ ученика на учебное задание.

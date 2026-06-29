@@ -10,6 +10,54 @@ export class ApiError extends Error {
   }
 }
 
+async function streamSse(
+  path: string,
+  body: unknown,
+  onToken: (token: string) => void,
+  errorMessage: string,
+): Promise<void> {
+  const token = useAuthStore.getState().token;
+  const headers = new Headers({ "Content-Type": "application/json" });
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+
+  const res = await fetch(`${API_URL}${path}`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok || !res.body) {
+    const responseBody = await res.json().catch(() => null);
+    throw new ApiError(res.status, responseBody?.detail ?? errorMessage);
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const lines = buffer.split("\n\n");
+    buffer = lines.pop() ?? "";
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("data:")) continue;
+      const data = trimmed.slice(5).trim();
+      if (data === "[DONE]") return;
+      try {
+        const parsed = JSON.parse(data) as { content?: string };
+        if (parsed.content) onToken(parsed.content);
+      } catch {
+        // ignore malformed chunk
+      }
+    }
+  }
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = useAuthStore.getState().token;
   const headers = new Headers(options.headers);
@@ -179,12 +227,52 @@ export interface StackProgressEntryOut {
   status: string;
 }
 
+export interface AssistantMessageOut {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  created_at: string;
+}
+
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+}
+
+export interface QuizResultOut {
+  direction_slug: string;
+  direction_title: string;
+  direction_icon: string;
+  description: string;
+  course_slug: string | null;
+  scores: Record<string, number>;
+  explanation: string;
+}
+
 export const api = {
-  register: (data: { email: string; password: string; name: string }) =>
-    request<UserOut>("/api/auth/register", { method: "POST", body: JSON.stringify(data) }),
+  registerStart: (email: string) =>
+    request<{ detail: string }>("/api/auth/register/start", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    }),
+
+  registerVerify: (email: string, code: string) =>
+    request<{ detail: string }>("/api/auth/register/verify", {
+      method: "POST",
+      body: JSON.stringify({ email, code }),
+    }),
+
+  registerComplete: (data: { email: string; password: string; name: string }) =>
+    request<Token>("/api/auth/register/complete", { method: "POST", body: JSON.stringify(data) }),
 
   login: (data: { email: string; password: string }) =>
     request<Token>("/api/auth/login", { method: "POST", body: JSON.stringify(data) }),
+
+  googleLogin: (idToken: string) =>
+    request<Token>("/api/auth/google", {
+      method: "POST",
+      body: JSON.stringify({ id_token: idToken }),
+    }),
 
   me: () => request<UserOut>("/api/auth/me"),
 
@@ -242,50 +330,22 @@ export const api = {
   clearChatHistory: (lessonSlug: string) =>
     request<{ detail: string }>(`/api/chat/${lessonSlug}/history`, { method: "DELETE" }),
 
-  streamChat: async (
-    lessonSlug: string,
-    message: string,
-    onToken: (token: string) => void,
-  ): Promise<void> => {
-    const token = useAuthStore.getState().token;
-    const headers = new Headers({ "Content-Type": "application/json" });
-    if (token) headers.set("Authorization", `Bearer ${token}`);
+  streamChat: (lessonSlug: string, message: string, onToken: (token: string) => void) =>
+    streamSse(`/api/chat/${lessonSlug}`, { message }, onToken, "Не удалось получить ответ от AI"),
 
-    const res = await fetch(`${API_URL}/api/chat/${lessonSlug}`, {
+  getAssistantHistory: () => request<AssistantMessageOut[]>("/api/assistant/history"),
+
+  clearAssistantHistory: () =>
+    request<{ detail: string }>("/api/assistant/history", { method: "DELETE" }),
+
+  streamAssistant: (message: string, onToken: (token: string) => void) =>
+    streamSse("/api/assistant/", { message }, onToken, "Не удалось получить ответ от AI-помощника"),
+
+  getCareerQuiz: () => request<QuizQuestion[]>("/api/quiz/career-path"),
+
+  submitCareerQuiz: (answers: number[]) =>
+    request<QuizResultOut>("/api/quiz/career-path/submit", {
       method: "POST",
-      headers,
-      body: JSON.stringify({ message }),
-    });
-
-    if (!res.ok || !res.body) {
-      const body = await res.json().catch(() => null);
-      throw new ApiError(res.status, body?.detail ?? "Не удалось получить ответ от AI");
-    }
-
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-
-      const lines = buffer.split("\n\n");
-      buffer = lines.pop() ?? "";
-
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed.startsWith("data:")) continue;
-        const data = trimmed.slice(5).trim();
-        if (data === "[DONE]") return;
-        try {
-          const parsed = JSON.parse(data) as { content?: string };
-          if (parsed.content) onToken(parsed.content);
-        } catch {
-          // ignore malformed chunk
-        }
-      }
-    }
-  },
+      body: JSON.stringify({ answers }),
+    }),
 };

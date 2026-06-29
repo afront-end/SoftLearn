@@ -6,6 +6,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { AssistantWidget } from "@/components/assistant-widget";
+import { CareerQuizBanner } from "@/components/career-quiz-banner";
+import { ItDirections } from "@/components/it-directions";
 import { Navbar } from "@/components/navbar";
 import { api, ApiError, CourseOut } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
@@ -92,7 +95,16 @@ export default function Home() {
           )}
         </section>
 
+        {token && (
+          <>
+            <ItDirections />
+            <CareerQuizBanner />
+          </>
+        )}
+
         <section className="mx-auto max-w-4xl px-6 pb-20">
+          {token && <h2 className="mb-6 text-center text-2xl font-bold tracking-tight">Доступные курсы</h2>}
+
           {error && <p className="text-center text-red-500">{error}</p>}
 
           {!courses && !error && (
@@ -135,6 +147,7 @@ export default function Home() {
           </div>
         </section>
       </main>
+      {token && <AssistantWidget />}
     </>
   );
 }

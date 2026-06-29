@@ -5,15 +5,28 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 
 
-class UserRegister(BaseModel):
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class RegisterStartIn(BaseModel):
+    email: EmailStr
+
+
+class RegisterVerifyIn(BaseModel):
+    email: EmailStr
+    code: str = Field(min_length=6, max_length=6)
+
+
+class RegisterCompleteIn(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8)
     name: str = Field(min_length=1, max_length=100)
 
 
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
+class GoogleLoginIn(BaseModel):
+    id_token: str
 
 
 class UserOut(BaseModel):

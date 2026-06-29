@@ -4,8 +4,9 @@ import { motion } from "framer-motion";
 import { AlertCircle, ArrowRight, Eye, EyeOff, Lock, Mail, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
+import { GoogleButton } from "@/components/auth/google-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { api, ApiError } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
@@ -19,22 +20,37 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  async function finishAuth(access_token: string) {
+    useAuthStore.setState({ token: access_token });
+    const user = await api.me();
+    setAuth(access_token, user);
+    router.push("/");
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
     try {
       const { access_token } = await api.login({ email, password });
-      useAuthStore.setState({ token: access_token });
-      const user = await api.me();
-      setAuth(access_token, user);
-      router.push("/");
+      await finishAuth(access_token);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Не удалось войти");
     } finally {
       setLoading(false);
     }
   }
+
+  const handleGoogleCredential = useCallback(async (idToken: string) => {
+    setError(null);
+    try {
+      const { access_token } = await api.googleLogin(idToken);
+      await finishAuth(access_token);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Не удалось войти через Google");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <main className="relative flex flex-1 items-center justify-center overflow-hidden p-6">
@@ -124,6 +140,14 @@ export default function LoginPage() {
             </Link>
           </p>
         </form>
+
+        <div className="my-5 flex items-center gap-3">
+          <div className="h-px flex-1 bg-card-border" />
+          <span className="text-xs text-muted">или</span>
+          <div className="h-px flex-1 bg-card-border" />
+        </div>
+
+        <GoogleButton onCredential={handleGoogleCredential} text="signin_with" />
       </motion.div>
     </main>
   );
