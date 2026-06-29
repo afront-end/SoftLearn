@@ -20,39 +20,59 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="/" className="flex items-center">
           <Logo />
         </Link>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <nav className="hidden items-center gap-8 text-sm font-medium text-muted md:flex">
+          <Link href="/#directions" className="transition-colors hover:text-foreground">
+            Направления
+          </Link>
+          <Link href="/#courses" className="transition-colors hover:text-foreground">
+            Курсы
+          </Link>
           {user && (
-            <Link
-              href="/dashboard"
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:border-accent/50 hover:text-accent sm:h-auto sm:w-auto sm:gap-1.5 sm:px-3 sm:py-1.5"
-              aria-label="Личный кабинет"
-            >
-              <LayoutDashboard size={15} />
-              <span className="hidden font-mono text-[13px] sm:inline">кабинет</span>
+            <Link href="/dashboard" className="transition-colors hover:text-foreground">
+              Кабинет
             </Link>
           )}
+        </nav>
+
+        <div className="flex items-center gap-2 sm:gap-3">
           <ThemeToggle />
           {user ? (
-            <button
-              onClick={handleLogout}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:border-danger/50 hover:text-danger sm:h-auto sm:w-auto sm:gap-1.5 sm:px-3 sm:py-1.5"
-              aria-label="Выйти"
-            >
-              <LogOut size={15} />
-              <span className="hidden font-mono text-[13px] sm:inline">выйти</span>
-            </button>
+            <>
+              <Link
+                href="/dashboard"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted transition-colors hover:border-accent/40 hover:text-accent md:hidden"
+                aria-label="Личный кабинет"
+              >
+                <LayoutDashboard size={16} />
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 rounded-full border border-border px-3.5 py-2 text-sm font-medium text-muted transition-colors hover:border-danger/40 hover:text-danger"
+              >
+                <LogOut size={15} />
+                <span className="hidden sm:inline">Выйти</span>
+              </button>
+            </>
           ) : (
-            <Link
-              href="/login"
-              className="rounded-lg bg-accent px-4 py-1.5 font-mono text-[13px] font-medium text-accent-foreground transition-opacity hover:opacity-90"
-            >
-              войти
-            </Link>
+            <>
+              <Link
+                href="/login"
+                className="hidden text-sm font-medium text-muted transition-colors hover:text-foreground sm:inline"
+              >
+                Войти
+              </Link>
+              <Link
+                href="/register"
+                className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-sm transition-transform hover:-translate-y-0.5"
+              >
+                Начать
+              </Link>
+            </>
           )}
         </div>
       </div>

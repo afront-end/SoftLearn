@@ -10,8 +10,15 @@ import { McqExercise } from "@/components/practice/mcq-exercise";
 import { OpenExercise } from "@/components/practice/open-exercise";
 import { Navbar } from "@/components/navbar";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { Card } from "@/components/ui/card";
 import { api, ApiError, ExerciseCheckOut, ExerciseOut } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
+
+const TYPE_LABEL: Record<string, string> = {
+  mcq: "Выбор ответа",
+  open: "Открытый вопрос",
+  code: "Код",
+};
 
 export default function PracticePage() {
   const { lessonSlug } = useParams<{ lessonSlug: string }>();
@@ -84,11 +91,11 @@ export default function PracticePage() {
     return (
       <>
         <Navbar />
-        <main className="mx-auto max-w-2xl flex-1 px-6 py-10 text-center">
+        <main className="mx-auto max-w-2xl flex-1 px-6 py-12 text-center">
           <p className="text-muted">В этом уроке нет задач для практики.</p>
           <button
             onClick={() => router.push(`/lessons/${lessonSlug}/test`)}
-            className="mt-4 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
+            className="mt-4 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
           >
             Перейти к тесту →
           </button>
@@ -100,92 +107,88 @@ export default function PracticePage() {
   return (
     <>
       <Navbar />
-      <main className="mx-auto max-w-2xl flex-1 px-6 py-10">
+      <main className="mx-auto max-w-2xl flex-1 px-6 py-12">
         <Breadcrumb
           items={[
-            { label: "softlearn", href: "/" },
-            { label: lessonSlug, href: `/lessons/${lessonSlug}` },
-            { label: "practice.test" },
+            { label: "Главная", href: "/" },
+            { label: "Практика" },
           ]}
         />
 
-        <div className="mb-4 mt-4 flex items-center justify-between font-mono text-[12px] text-muted">
+        <div className="mb-4 mt-4 flex items-center justify-between text-sm text-muted">
           <span>
-            задача {index + 1} / {exercises.length}
+            Задача {index + 1} из {exercises.length}
           </span>
-          <span className="rounded-md border border-border bg-surface-2 px-2 py-0.5 text-ai">
-            {current.type}
+          <span className="rounded-full border border-border bg-surface-2 px-3 py-1 text-xs font-medium text-ai">
+            {TYPE_LABEL[current.type]}
           </span>
         </div>
 
-        <motion.div
-          key={current.id}
-          initial={reduce ? false : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="panel rounded-xl p-6"
-        >
-          <p className="font-medium">{current.question}</p>
+        <motion.div key={current.id} initial={reduce ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+          <Card className="p-6">
+            <p className="font-medium leading-relaxed">{current.question}</p>
 
-          <div className="mt-4">
-            {current.type === "mcq" && current.options && (
-              <McqExercise
-                options={current.options}
-                selected={answer || null}
-                disabled={!!result}
-                onSelect={setAnswer}
-              />
-            )}
-            {current.type === "open" && (
-              <OpenExercise value={answer} disabled={!!result} onChange={setAnswer} />
-            )}
-            {current.type === "code" && (
-              <CodeExercise value={answer} disabled={!!result} onChange={setAnswer} />
-            )}
-          </div>
-
-          {result && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`mt-4 flex gap-2 rounded-lg p-3 text-sm ${
-                result.correct ? "bg-success/10 text-success" : "bg-danger/10 text-danger"
-              }`}
-            >
-              {result.correct ? (
-                <CheckCircle2 size={16} className="mt-0.5 shrink-0" />
-              ) : (
-                <XCircle size={16} className="mt-0.5 shrink-0" />
+            <div className="mt-4">
+              {current.type === "mcq" && current.options && (
+                <McqExercise
+                  options={current.options}
+                  selected={answer || null}
+                  disabled={!!result}
+                  onSelect={setAnswer}
+                />
               )}
-              <div>
-                <p className="font-medium">{result.correct ? "Верно!" : "Неверно"}</p>
-                {result.correct_answer && (
-                  <p className="mt-1 text-muted">Правильный ответ: {result.correct_answer}</p>
-                )}
-                {result.explanation && <p className="mt-1 text-muted">{result.explanation}</p>}
-              </div>
-            </motion.div>
-          )}
+              {current.type === "open" && (
+                <OpenExercise value={answer} disabled={!!result} onChange={setAnswer} />
+              )}
+              {current.type === "code" && (
+                <CodeExercise value={answer} disabled={!!result} onChange={setAnswer} />
+              )}
+            </div>
 
-          <div className="mt-6 flex justify-end gap-2">
-            {!result ? (
-              <button
-                onClick={handleCheck}
-                disabled={checking || !answer.trim()}
-                className="flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+            {result && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`mt-4 flex gap-2 rounded-xl p-3 text-sm ${
+                  result.correct ? "bg-success/10 text-success" : "bg-danger/10 text-danger"
+                }`}
               >
-                {checking && <Loader2 size={14} className="animate-spin" />}
-                Проверить
-              </button>
-            ) : (
-              <button
-                onClick={handleNext}
-                className="flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
-              >
-                {index + 1 < exercises.length ? "Следующая задача" : "К тесту"}
-                <ChevronRight size={14} />
-              </button>
+                {result.correct ? (
+                  <CheckCircle2 size={16} className="mt-0.5 shrink-0" />
+                ) : (
+                  <XCircle size={16} className="mt-0.5 shrink-0" />
+                )}
+                <div>
+                  <p className="font-medium">{result.correct ? "Верно!" : "Неверно"}</p>
+                  {result.correct_answer && (
+                    <p className="mt-1 text-muted">Правильный ответ: {result.correct_answer}</p>
+                  )}
+                  {result.explanation && <p className="mt-1 text-muted">{result.explanation}</p>}
+                </div>
+              </motion.div>
             )}
-          </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              {!result ? (
+                <button
+                  onClick={handleCheck}
+                  disabled={checking || !answer.trim()}
+                  className="flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md disabled:opacity-50"
+                >
+                  {checking && <Loader2 size={14} className="animate-spin" />}
+                  Проверить
+                </button>
+              ) : (
+                <button
+                  onClick={handleNext}
+                  className="flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+                >
+                  {index + 1 < exercises.length ? "Следующая задача" : "К тесту"}
+                  <ChevronRight size={14} />
+                </button>
+              )}
+            </div>
+          </Card>
         </motion.div>
       </main>
     </>

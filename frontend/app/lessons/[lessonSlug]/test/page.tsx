@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 
 import { Navbar } from "@/components/navbar";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { Card } from "@/components/ui/card";
 import { api, ApiError, TestOut, TestResultOut } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 
@@ -79,28 +80,15 @@ export default function TestPage() {
     return (
       <>
         <Navbar />
-        <main className="mx-auto max-w-2xl flex-1 px-6 py-10">
-          <motion.div
-            initial={reduce ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="code-window panel-shadow text-center"
-          >
-            <div className="code-window-titlebar justify-start">
-              <span className="code-dot" style={{ background: "var(--danger)" }} />
-              <span className="code-dot" style={{ background: "var(--warning)" }} />
-              <span className="code-dot" style={{ background: "var(--success)" }} />
-              <span className="ml-2 font-mono text-[11px] text-muted">
-                test.{result.passed ? "pass" : "fail"}
-              </span>
-            </div>
-
-            <div className="p-8">
+        <main className="mx-auto max-w-2xl flex-1 px-6 py-12">
+          <motion.div initial={reduce ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+            <Card className="p-8 text-center">
               {result.passed ? (
                 <CheckCircle2 size={48} className="mx-auto text-success" />
               ) : (
                 <XCircle size={48} className="mx-auto text-danger" />
               )}
-              <h1 className="mt-4 font-mono text-2xl font-bold">{result.score}%</h1>
+              <h1 className="mt-4 text-3xl font-bold">{result.score}%</h1>
               <p className="mt-1 text-muted">
                 {result.passed
                   ? "Тест пройден! Следующий урок открыт."
@@ -110,7 +98,7 @@ export default function TestPage() {
               {result.mistakes.length > 0 && (
                 <div className="mt-6 space-y-3 text-left">
                   {result.mistakes.map((m, i) => (
-                    <div key={i} className="rounded-lg bg-danger/10 p-3 text-sm">
+                    <div key={i} className="rounded-xl bg-danger/10 p-3 text-sm">
                       <p className="font-medium">{m.question}</p>
                       <p className="mt-1 text-muted">Ваш ответ: {m.user_answer}</p>
                       <p className="text-success">Правильный: {m.correct_answer}</p>
@@ -123,19 +111,19 @@ export default function TestPage() {
                 {!result.passed && (
                   <button
                     onClick={handleRetry}
-                    className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-accent/50"
+                    className="flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold transition-all hover:-translate-y-0.5 hover:border-accent/40"
                   >
                     <RotateCcw size={14} /> Попробовать снова
                   </button>
                 )}
                 <Link
                   href={result.passed ? "/" : `/lessons/${lessonSlug}`}
-                  className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
+                  className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
                 >
                   {result.passed ? "К курсам" : "К уроку"}
                 </Link>
               </div>
-            </div>
+            </Card>
           </motion.div>
         </main>
       </>
@@ -147,17 +135,11 @@ export default function TestPage() {
   return (
     <>
       <Navbar />
-      <main className="mx-auto max-w-2xl flex-1 px-6 py-10">
-        <Breadcrumb
-          items={[
-            { label: "softlearn", href: "/" },
-            { label: lessonSlug, href: `/lessons/${lessonSlug}` },
-            { label: "test-barrier.lock" },
-          ]}
-        />
+      <main className="mx-auto max-w-2xl flex-1 px-6 py-12">
+        <Breadcrumb items={[{ label: "Главная", href: "/" }, { label: "Тест-барьер" }]} />
 
         <h1 className="mt-4 text-2xl font-bold">Тест-барьер</h1>
-        <p className="mt-1 text-sm text-muted">
+        <p className="mt-1 leading-relaxed text-muted">
           Нужно набрать минимум {test.pass_threshold}%, чтобы открыть следующий урок.
         </p>
 
@@ -168,27 +150,28 @@ export default function TestPage() {
               initial={reduce ? false : { opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: qIndex * 0.05 }}
-              className="panel rounded-xl p-5"
             >
-              <p className="font-medium">
-                <span className="font-mono text-muted">{qIndex + 1}.</span> {q.question}
-              </p>
-              <div className="mt-3 space-y-2">
-                {q.options.map((option) => (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => selectAnswer(qIndex, option)}
-                    className={`w-full rounded-lg border px-4 py-2.5 text-left text-sm transition-colors ${
-                      answers[qIndex] === option
-                        ? "border-accent bg-accent/10"
-                        : "border-border hover:border-accent/40"
-                    }`}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
+              <Card className="p-5">
+                <p className="font-medium">
+                  {qIndex + 1}. {q.question}
+                </p>
+                <div className="mt-3 space-y-2">
+                  {q.options.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => selectAnswer(qIndex, option)}
+                      className={`w-full rounded-xl border px-4 py-2.5 text-left text-sm transition-colors ${
+                        answers[qIndex] === option
+                          ? "border-accent bg-accent/10"
+                          : "border-border hover:border-accent/40"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </Card>
             </motion.div>
           ))}
         </div>
@@ -196,7 +179,7 @@ export default function TestPage() {
         <button
           onClick={handleSubmit}
           disabled={!allAnswered || submitting}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-semibold text-accent-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md disabled:opacity-50"
         >
           {submitting && <Loader2 size={14} className="animate-spin" />}
           Отправить тест

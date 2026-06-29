@@ -9,10 +9,7 @@ export interface BreadcrumbItem {
 
 export function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
   return (
-    <nav
-      aria-label="Хлебные крошки"
-      className="flex flex-wrap items-center gap-1.5 font-mono text-[13px] text-muted"
-    >
+    <nav aria-label="Хлебные крошки" className="flex flex-wrap items-center gap-1.5 text-sm text-muted">
       {items.map((item, i): ReactNode => {
         const isLast = i === items.length - 1;
         return (
@@ -22,9 +19,9 @@ export function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
                 {item.label}
               </Link>
             ) : (
-              <span className={isLast ? "text-foreground" : undefined}>{item.label}</span>
+              <span className={isLast ? "font-medium text-foreground" : undefined}>{item.label}</span>
             )}
-            {!isLast && <ChevronRight size={12} className="text-border" />}
+            {!isLast && <ChevronRight size={14} className="text-border" />}
           </span>
         );
       })}

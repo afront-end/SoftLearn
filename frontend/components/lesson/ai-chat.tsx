@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Bot, Loader2, Send, Trash2, User } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { Card } from "@/components/ui/card";
 import { api, ApiError, ChatMessageOut } from "@/lib/api";
 
 interface Props {
@@ -68,28 +69,28 @@ export function AiChat({ lessonSlug }: Props) {
   }
 
   return (
-    <div className="code-window flex h-full flex-col">
-      <div className="code-window-titlebar justify-between">
+    <Card className="flex h-full flex-col">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
         <div className="flex items-center gap-2">
-          <span className="code-dot" style={{ background: "var(--danger)" }} />
-          <span className="code-dot" style={{ background: "var(--warning)" }} />
-          <span className="code-dot" style={{ background: "var(--success)" }} />
-          <span className="ml-1 flex items-center gap-1.5 font-mono text-[11px] text-muted">
-            <Bot size={12} className="text-ai" /> mentor.ts
-          </span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ai/10 text-ai">
+            <Bot size={15} />
+          </div>
+          <span className="text-sm font-semibold">AI-наставник</span>
         </div>
         <button
           onClick={handleClear}
           className="text-muted transition-colors hover:text-danger"
           aria-label="Очистить историю"
         >
-          <Trash2 size={13} />
+          <Trash2 size={14} />
         </button>
       </div>
 
       <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
         {messages.length === 0 && (
-          <p className="text-sm text-muted">Спросите что-нибудь про этот урок, отвечу только по теме.</p>
+          <p className="text-sm leading-relaxed text-muted">
+            Спросите что-нибудь про этот урок, отвечу только по теме.
+          </p>
         )}
         <AnimatePresence initial={false}>
           {messages.map((m) => (
@@ -100,19 +101,19 @@ export function AiChat({ lessonSlug }: Props) {
               className={`flex gap-2 ${m.role === "user" ? "justify-end" : "justify-start"}`}
             >
               {m.role === "assistant" && (
-                <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-ai/15 text-ai">
+                <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ai/10 text-ai">
                   <Bot size={13} />
                 </div>
               )}
               <div
-                className={`max-w-[80%] whitespace-pre-wrap rounded-lg px-3 py-2 text-sm ${
+                className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${
                   m.role === "user" ? "bg-accent text-accent-foreground" : "panel-2 text-foreground"
                 }`}
               >
                 {m.content || <Loader2 size={14} className="animate-spin text-muted" />}
               </div>
               {m.role === "user" && (
-                <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-2">
+                <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-2">
                   <User size={13} />
                 </div>
               )}
@@ -129,16 +130,16 @@ export function AiChat({ lessonSlug }: Props) {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Спросите про урок..."
           disabled={streaming}
-          className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/25"
+          className="flex-1 rounded-full border border-border bg-background px-4 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
         <button
           type="submit"
           disabled={streaming || !input.trim()}
-          className="flex h-9 w-9 items-center justify-center rounded-md bg-accent text-accent-foreground disabled:opacity-50"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground disabled:opacity-50"
         >
           {streaming ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
         </button>
       </form>
-    </div>
+    </Card>
   );
 }

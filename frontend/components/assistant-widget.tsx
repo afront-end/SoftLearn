@@ -74,14 +74,17 @@ export function AssistantWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ duration: 0.2 }}
-            className="code-window panel-shadow mb-3 flex h-[28rem] w-[22rem] flex-col"
+            className="panel panel-shadow mb-3 flex h-[28rem] w-[22rem] flex-col rounded-2xl"
           >
-            <div className="code-window-titlebar justify-between">
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <div className="flex items-center gap-2">
-                <span className="code-dot" style={{ background: "var(--danger)" }} />
-                <span className="code-dot" style={{ background: "var(--warning)" }} />
-                <span className="code-dot" style={{ background: "var(--success)" }} />
-                <span className="ml-1 font-mono text-[11px] text-muted">assistant.ts</span>
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ai/10 text-ai">
+                  <Bot size={15} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">AI-помощник</p>
+                  <p className="text-xs text-muted">Вопросы про платформу и IT</p>
+                </div>
               </div>
               <div className="flex items-center gap-2.5">
                 <button
@@ -89,21 +92,21 @@ export function AssistantWidget() {
                   className="text-muted transition-colors hover:text-danger"
                   aria-label="Очистить историю"
                 >
-                  <Trash2 size={13} />
+                  <Trash2 size={14} />
                 </button>
                 <button
                   onClick={() => setOpen(false)}
                   className="text-muted transition-colors hover:text-foreground"
                   aria-label="Закрыть"
                 >
-                  <X size={15} />
+                  <X size={16} />
                 </button>
               </div>
             </div>
 
             <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
               {messages.length === 0 && (
-                <p className="text-sm text-muted">
+                <p className="text-sm leading-relaxed text-muted">
                   Спросите, как проходят уроки, как устроены направления в IT или какой путь выбрать —
                   отвечу только по теме платформы и IT.
                 </p>
@@ -117,21 +120,19 @@ export function AssistantWidget() {
                     className={`flex gap-2 ${m.role === "user" ? "justify-end" : "justify-start"}`}
                   >
                     {m.role === "assistant" && (
-                      <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-ai/15 text-ai">
+                      <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ai/10 text-ai">
                         <Bot size={13} />
                       </div>
                     )}
                     <div
-                      className={`max-w-[80%] whitespace-pre-wrap rounded-lg px-3 py-2 text-sm ${
-                        m.role === "user"
-                          ? "bg-accent text-accent-foreground"
-                          : "panel-2 text-foreground"
+                      className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${
+                        m.role === "user" ? "bg-accent text-accent-foreground" : "panel-2 text-foreground"
                       }`}
                     >
                       {m.content || <Loader2 size={14} className="animate-spin text-muted" />}
                     </div>
                     {m.role === "user" && (
-                      <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-2">
+                      <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-2">
                         <User size={13} />
                       </div>
                     )}
@@ -148,12 +149,12 @@ export function AssistantWidget() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Сообщение..."
                 disabled={streaming}
-                className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/25"
+                className="flex-1 rounded-full border border-border bg-background px-4 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
               <button
                 type="submit"
                 disabled={streaming || !input.trim()}
-                className="flex h-9 w-9 items-center justify-center rounded-md bg-accent text-accent-foreground disabled:opacity-50"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground disabled:opacity-50"
               >
                 {streaming ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
               </button>
@@ -166,8 +167,7 @@ export function AssistantWidget() {
         whileTap={{ scale: 0.95 }}
         onClick={() => setOpen((v) => !v)}
         aria-label="AI-помощник"
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-xl"
-        style={{ boxShadow: "0 8px 24px -6px color-mix(in srgb, var(--accent) 55%, transparent)" }}
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg transition-transform hover:-translate-y-0.5"
       >
         {open ? <X size={22} /> : <MessageCircle size={22} />}
       </motion.button>

@@ -4,6 +4,8 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Bug, Database, Layers, Server, Smartphone, SquareCode, Workflow } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
+import { Card } from "@/components/ui/card";
+
 interface Direction {
   icon: LucideIcon;
   title: string;
@@ -41,26 +43,21 @@ const DIRECTIONS: Direction[] = [
     title: "DevOps",
     description: "Настраиваешь серверы, облако, CI/CD — отвечаешь за то, чтобы всё стабильно работало и деплоилось.",
   },
-  {
-    icon: Bug,
-    title: "QA",
-    description: "Находишь и предотвращаешь ошибки, продумываешь тест-кейсы, следишь за качеством продукта.",
-  },
 ];
 
 export function ItDirections() {
   const reduce = useReducedMotion();
 
   return (
-    <section className="mx-auto max-w-4xl px-6 pb-16">
-      <div className="mb-6 text-center">
-        <h2 className="text-2xl font-bold tracking-tight">Что такое IT и какие в нём направления</h2>
-        <p className="mt-2 text-sm text-muted">
+    <section className="mx-auto max-w-5xl px-6 pb-20">
+      <div className="mb-10 text-center">
+        <h2 className="text-3xl font-bold tracking-tight">Какие есть направления в IT</h2>
+        <p className="mx-auto mt-3 max-w-lg leading-[1.7] text-muted">
           IT — это не одна профессия, а множество направлений с разными задачами и складом мышления.
         </p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {DIRECTIONS.map((d, i) => (
           <motion.div
             key={d.title}
@@ -68,13 +65,14 @@ export function ItDirections() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ delay: i * 0.05, duration: 0.5 }}
-            className="panel flex flex-col gap-2 rounded-xl p-5 transition-colors hover:border-accent/40"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-2 text-accent">
-              <d.icon size={18} strokeWidth={1.75} />
-            </div>
-            <h3 className="font-mono text-sm font-semibold">{d.title}</h3>
-            <p className="text-sm text-muted">{d.description}</p>
+            <Card hover className="flex h-full flex-col gap-3 p-6">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 text-accent">
+                <d.icon size={22} strokeWidth={1.75} />
+              </div>
+              <h3 className="font-semibold">{d.title}</h3>
+              <p className="text-sm leading-relaxed text-muted">{d.description}</p>
+            </Card>
           </motion.div>
         ))}
       </div>

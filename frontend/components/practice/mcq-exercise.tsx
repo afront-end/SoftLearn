@@ -19,10 +19,8 @@ export function McqExercise({ options, selected, disabled, onSelect }: Props) {
           disabled={disabled}
           onClick={() => onSelect(option)}
           whileTap={{ scale: 0.98 }}
-          className={`w-full rounded-lg border px-4 py-3 text-left text-sm transition-colors ${
-            selected === option
-              ? "border-accent bg-accent/10"
-              : "border-border hover:border-accent/40"
+          className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition-colors ${
+            selected === option ? "border-accent bg-accent/10" : "border-border hover:border-accent/40"
           } disabled:opacity-70`}
         >
           {option}

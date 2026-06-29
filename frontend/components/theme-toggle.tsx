@@ -22,7 +22,7 @@ export function ThemeToggle() {
       type="button"
       aria-label="Переключить тему"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-foreground transition-colors hover:border-accent/50 hover:text-accent"
+      className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface text-foreground transition-colors hover:border-accent/40 hover:text-accent"
     >
       <motion.span
         key={isDark ? "moon" : "sun"}

@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Card } from "@/components/ui/card";
+import { GradientBlob } from "@/components/ui/gradient-blob";
 import { Logo } from "@/components/ui/logo";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
@@ -29,37 +31,31 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="dot-grid relative flex flex-1 items-center justify-center overflow-hidden p-6">
+    <main className="relative flex flex-1 items-center justify-center overflow-hidden p-6">
+      <GradientBlob />
       <div className="absolute right-6 top-6">
         <ThemeToggle />
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 24, scale: 0.98 }}
+        initial={{ opacity: 0, y: 20, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="code-window panel-shadow w-full max-w-md text-center"
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full max-w-md"
       >
-        <div className="code-window-titlebar justify-start">
-          <span className="code-dot" style={{ background: "var(--danger)" }} />
-          <span className="code-dot" style={{ background: "var(--warning)" }} />
-          <span className="code-dot" style={{ background: "var(--success)" }} />
-          <span className="ml-2 font-mono text-[11px] text-muted">onboarding.ts</span>
-        </div>
-
-        <div className="p-8">
+        <Card className="p-8 text-center">
           <div className="mx-auto w-fit">
             <Logo showWordmark={false} />
           </div>
-          <h1 className="mt-4 text-2xl font-bold">{user ? `Привет, ${user.name}!` : "Привет!"}</h1>
+          <h1 className="mt-5 text-2xl font-bold">{user ? `Привет, ${user.name}!` : "Привет!"}</h1>
           <p className="mt-2 text-muted">Вы уже умеете программировать?</p>
 
-          <div className="mt-6 space-y-3">
+          <div className="mt-7 space-y-3">
             <motion.button
               whileTap={{ scale: 0.98 }}
               disabled={loading !== null}
               onClick={() => handleChoice(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-accent-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md disabled:opacity-60"
             >
               {loading === "yes" ? <Loader2 size={16} className="animate-spin" /> : <GraduationCap size={16} />}
               Да, пройти вступительный тест
@@ -69,13 +65,13 @@ export default function OnboardingPage() {
               whileTap={{ scale: 0.98 }}
               disabled={loading !== null}
               onClick={() => handleChoice(false)}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-border px-4 py-3 text-sm font-medium transition-colors hover:border-accent/50 disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-semibold transition-all hover:-translate-y-0.5 hover:border-accent/40 disabled:opacity-60"
             >
               {loading === "no" ? <Loader2 size={16} className="animate-spin" /> : <Rocket size={16} />}
               Нет, начну с самого начала
             </motion.button>
           </div>
-        </div>
+        </Card>
       </motion.div>
     </main>
   );

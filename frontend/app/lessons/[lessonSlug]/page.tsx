@@ -4,7 +4,7 @@ import "katex/dist/katex.min.css";
 import "highlight.js/styles/github-dark.css";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { CheckCircle2, FileCode2, Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -16,6 +16,7 @@ import remarkMath from "remark-math";
 import { AiChat } from "@/components/lesson/ai-chat";
 import { Navbar } from "@/components/navbar";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { Card } from "@/components/ui/card";
 import { api, ApiError, LessonDetail } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 
@@ -74,44 +75,37 @@ export default function LessonPage() {
   return (
     <>
       <Navbar />
-      <main className="mx-auto w-full max-w-6xl min-w-0 flex-1 px-4 py-6 sm:px-6">
+      <main className="mx-auto w-full max-w-6xl min-w-0 flex-1 px-4 py-8 sm:px-6">
         <Breadcrumb
           items={[
-            { label: "softlearn", href: "/" },
+            { label: "Главная", href: "/" },
             { label: lesson.stack_title, href: `/stacks/${lesson.stack_slug}` },
             { label: lesson.title },
           ]}
         />
 
         <div className="mt-4 grid min-w-0 gap-6 lg:grid-cols-[1fr_380px]">
-          <motion.article
+          <motion.div
             initial={reduce ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="code-window min-w-0"
+            className="min-w-0"
           >
-            <div className="code-window-titlebar justify-start">
-              <span className="code-dot" style={{ background: "var(--danger)" }} />
-              <span className="code-dot" style={{ background: "var(--warning)" }} />
-              <span className="code-dot" style={{ background: "var(--success)" }} />
-              <span className="ml-2 flex items-center gap-1.5 truncate font-mono text-[11px] text-muted">
-                <FileCode2 size={12} /> {lesson.slug}.md
-              </span>
-            </div>
-
-            <div className="lesson-content prose prose-sm max-w-none p-6 dark:prose-invert sm:p-8">
-              <h1 className="!mt-0 text-gradient text-2xl font-bold">{lesson.title}</h1>
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[rehypeKatex, rehypeHighlight]}
-              >
-                {lesson.content ?? ""}
-              </ReactMarkdown>
+            <Card className="p-6 sm:p-8">
+              <article className="lesson-content prose prose-base max-w-none dark:prose-invert">
+                <h1 className="!mt-0 text-3xl font-bold tracking-tight">{lesson.title}</h1>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm, remarkMath]}
+                  rehypePlugins={[rehypeKatex, rehypeHighlight]}
+                >
+                  {lesson.content ?? ""}
+                </ReactMarkdown>
+              </article>
 
               <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6">
                 {lesson.lesson_read ? (
                   <button
                     onClick={() => router.push(`/lessons/${lessonSlug}/practice`)}
-                    className="flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
+                    className="flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
                   >
                     <CheckCircle2 size={14} /> К практике
                   </button>
@@ -119,7 +113,7 @@ export default function LessonPage() {
                   <button
                     onClick={handleMarkRead}
                     disabled={marking}
-                    className="flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+                    className="flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md disabled:opacity-50"
                   >
                     {marking ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
                     Отметить как прочитанное
@@ -132,8 +126,8 @@ export default function LessonPage() {
                   К списку уроков →
                 </button>
               </div>
-            </div>
-          </motion.article>
+            </Card>
+          </motion.div>
 
           <motion.div
             initial={reduce ? false : { opacity: 0, y: 12 }}

@@ -75,21 +75,20 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-/* Smooth, deliberate theme switch (200ms) on the properties that actually change */
+/* Smooth, deliberate theme switch (200ms) on the surfaces that actually change */
 body,
-.card,
 .panel,
 .panel-2,
 input,
 textarea,
-button,
 header,
-nav,
-section,
-[class*="border-"],
-[class*="bg-"],
-[class*="text-"] {
-  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease, box-shadow 200ms ease;
+nav {
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+
+button,
+a {
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease, transform 150ms ease, box-shadow 150ms ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
