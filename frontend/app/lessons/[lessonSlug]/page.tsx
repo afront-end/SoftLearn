@@ -4,7 +4,8 @@ import "katex/dist/katex.min.css";
 import "highlight.js/styles/github-dark.css";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Circle, Loader2, Lock } from "lucide-react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -17,7 +18,7 @@ import { AiChat } from "@/components/lesson/ai-chat";
 import { Navbar } from "@/components/navbar";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Card } from "@/components/ui/card";
-import { api, ApiError, LessonDetail } from "@/lib/api";
+import { api, ApiError, LessonDetail, LessonWithProgress } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 
 export default function LessonPage() {
@@ -26,6 +27,7 @@ export default function LessonPage() {
   const reduce = useReducedMotion();
   const token = useAuthStore((s) => s.token);
   const [lesson, setLesson] = useState<LessonDetail | null>(null);
+  const [outline, setOutline] = useState<LessonWithProgress[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [marking, setMarking] = useState(false);
 
@@ -42,6 +44,17 @@ export default function LessonPage() {
         setError(err instanceof ApiError ? err.message : "Не удалось загрузить урок")
       );
   }, [lessonSlug, token]);
+
+  useEffect(() => {
+    if (!lesson || !token) return;
+    api
+      .getStackLessons(lesson.stack_slug)
+      .then((data) => setOutline(data.lessons))
+      .catch(() => undefined);
+  }, [lesson, token]);
+
+  const lessonIndex = outline?.findIndex((l) => l.slug === lessonSlug) ?? -1;
+  const nextLesson = lessonIndex >= 0 ? outline?.[lessonIndex + 1] : undefined;
 
   async function handleMarkRead() {
     setMarking(true);
@@ -76,13 +89,30 @@ export default function LessonPage() {
     <>
       <Navbar />
       <main className="mx-auto w-full max-w-6xl min-w-0 flex-1 px-4 py-8 sm:px-6">
-        <Breadcrumb
-          items={[
-            { label: "Главная", href: "/" },
-            { label: lesson.stack_title, href: `/stacks/${lesson.stack_slug}` },
-            { label: lesson.title },
-          ]}
-        />
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Breadcrumb
+            items={[
+              { label: "Главная", href: "/" },
+              { label: lesson.stack_title, href: `/stacks/${lesson.stack_slug}` },
+              { label: lesson.title },
+            ]}
+          />
+          {outline && lessonIndex >= 0 && (
+            <div className="flex items-center gap-3 text-sm">
+              <span className="text-muted">
+                Урок {lessonIndex + 1} из {outline.length}
+              </span>
+              {nextLesson && (
+                <Link
+                  href={`/lessons/${nextLesson.slug}`}
+                  className="flex items-center gap-1 rounded-full border border-border px-3 py-1.5 font-medium transition-colors hover:border-accent/40 hover:text-accent"
+                >
+                  Далее <ArrowRight size={14} />
+                </Link>
+              )}
+            </div>
+          )}
+        </div>
 
         <div className="mt-4 grid min-w-0 gap-6 lg:grid-cols-[1fr_380px]">
           <motion.div
@@ -133,9 +163,43 @@ export default function LessonPage() {
             initial={reduce ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="h-[70vh] min-w-0 lg:sticky lg:top-20 lg:h-[calc(100vh-6rem)]"
+            className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-20"
           >
-            <AiChat lessonSlug={lessonSlug} />
+            <div className="h-[440px]">
+              <AiChat lessonSlug={lessonSlug} />
+            </div>
+
+            {outline && outline.length > 0 && (
+              <Card className="p-4">
+                <h3 className="mb-3 text-sm font-semibold text-muted">Содержание урока</h3>
+                <ul className="space-y-1">
+                  {outline.map((l) => {
+                    const isCurrent = l.slug === lessonSlug;
+                    const Icon = l.status === "completed" ? CheckCircle2 : l.status === "locked" ? Lock : Circle;
+                    return (
+                      <li key={l.slug}>
+                        {l.status === "locked" ? (
+                          <span className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-muted/50">
+                            <Icon size={15} />
+                            {l.title}
+                          </span>
+                        ) : (
+                          <Link
+                            href={`/lessons/${l.slug}`}
+                            className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors ${
+                              isCurrent ? "bg-accent/10 font-medium text-accent" : "text-muted hover:text-foreground"
+                            }`}
+                          >
+                            <Icon size={15} className={l.status === "completed" ? "text-accent" : undefined} />
+                            {l.title}
+                          </Link>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </Card>
+            )}
           </motion.div>
         </div>
       </main>

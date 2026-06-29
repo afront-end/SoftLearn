@@ -1,16 +1,17 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Warm, welcoming light theme */
-  --background: #fafaf8;
+  /* Warm light theme, orange brand accent */
+  --background: #faf9f7;
   --surface: #ffffff;
-  --surface-2: #f2efe9;
-  --foreground: #1a1a1a;
-  --muted: #6b6b6b;
-  --border: #e8e5df;
+  --surface-2: #f1efe9;
+  --foreground: #18181b;
+  --muted: #6b6b70;
+  --border: #e6e3dc;
 
-  --accent: #1d4e89;
+  --accent: #e8722c;
   --accent-foreground: #ffffff;
   --ai: #0e7c86;
 
@@ -22,16 +23,16 @@
 }
 
 .dark {
-  /* Polished, equally considered dark theme */
-  --background: #0f1117;
-  --surface: #1c1f26;
-  --surface-2: #141720;
-  --foreground: #f2f2f0;
-  --muted: #9ba1aa;
-  --border: #2d3139;
+  /* Near-black dark theme, warm orange brand accent */
+  --background: #0a0a0c;
+  --surface: #15161b;
+  --surface-2: #1b1c22;
+  --foreground: #f4f4f3;
+  --muted: #93939c;
+  --border: #27282f;
 
-  --accent: #4d8fe0;
-  --accent-foreground: #0b1220;
+  --accent: #f0883e;
+  --accent-foreground: #19120a;
   --ai: #2dd4bf;
 
   --success: #3fb950;
@@ -137,6 +138,31 @@ a {
 .panel-shadow-hover:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 10px hsl(var(--shadow-color) / 0.1), 0 16px 36px -14px hsl(var(--shadow-color) / 0.22);
+}
+
+/* ---------- Browser-chrome "code window" framing ---------- */
+.code-window {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px hsl(var(--shadow-color) / 0.08), 0 10px 28px -12px hsl(var(--shadow-color) / 0.18);
+}
+
+.code-window-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.code-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
 }
 
 /* ---------- Accent gradient text (decorative, not code-related) ---------- */

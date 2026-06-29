@@ -45,7 +45,7 @@ export default function OnboardingPage() {
       >
         <Card className="p-8 text-center">
           <div className="mx-auto w-fit">
-            <Logo showWordmark={false} />
+            <Logo />
           </div>
           <h1 className="mt-5 text-2xl font-bold">{user ? `Привет, ${user.name}!` : "Привет!"}</h1>
           <p className="mt-2 text-muted">Вы уже умеете программировать?</p>

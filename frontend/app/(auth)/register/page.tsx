@@ -111,6 +111,19 @@ export default function RegisterPage() {
           <h1 className="mt-7 text-2xl font-bold tracking-tight">Начни свой путь</h1>
           <p className="mt-1 text-sm text-muted">Один структурированный курс, без лишних метаний</p>
 
+          {step === 1 && (
+            <>
+              <div className="mt-6">
+                <GoogleButton onCredential={handleGoogleCredential} text="signup_with" />
+              </div>
+              <div className="my-5 flex items-center gap-3">
+                <div className="h-px flex-1 bg-border" />
+                <span className="text-xs text-muted">или</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+            </>
+          )}
+
           <div className="mt-5 flex items-center gap-2">
             {[1, 2, 3].map((s) => (
               <div
@@ -279,18 +292,6 @@ export default function RegisterPage() {
                 )}
               </motion.button>
             </form>
-          )}
-
-          {step === 1 && (
-            <>
-              <div className="my-5 flex items-center gap-3">
-                <div className="h-px flex-1 bg-border" />
-                <span className="text-xs text-muted">или</span>
-                <div className="h-px flex-1 bg-border" />
-              </div>
-
-              <GoogleButton onCredential={handleGoogleCredential} text="signup_with" />
-            </>
           )}
         </Card>
       </motion.div>

@@ -26,11 +26,14 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-8 text-sm font-medium text-muted md:flex">
-          <Link href="/#directions" className="transition-colors hover:text-foreground">
-            Направления
-          </Link>
           <Link href="/#courses" className="transition-colors hover:text-foreground">
             Курсы
+          </Link>
+          <Link href="/#directions" className="transition-colors hover:text-foreground">
+            О нас
+          </Link>
+          <Link href="/#community" className="transition-colors hover:text-foreground">
+            Сообщество
           </Link>
           {user && (
             <Link href="/dashboard" className="transition-colors hover:text-foreground">
@@ -68,9 +71,9 @@ export function Navbar() {
               </Link>
               <Link
                 href="/register"
-                className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-sm transition-transform hover:-translate-y-0.5"
+                className="rounded-full border border-border px-4 py-2 text-sm font-semibold transition-colors hover:border-accent/50 hover:text-accent"
               >
-                Начать
+                Начать бесплатно
               </Link>
             </>
           )}

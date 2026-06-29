@@ -72,18 +72,23 @@ export function AiChat({ lessonSlug }: Props) {
     <Card className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b border-border px-4 py-3.5">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-ai/10 text-ai">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent">
             <Bot size={15} />
           </div>
-          <span className="text-sm font-semibold">AI-наставник</span>
+          <span className="text-sm font-semibold">AI-ассистент</span>
         </div>
-        <button
-          onClick={handleClear}
-          className="text-muted transition-colors hover:text-danger"
-          aria-label="Очистить историю"
-        >
-          <Trash2 size={14} />
-        </button>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">
+            по теме урока
+          </span>
+          <button
+            onClick={handleClear}
+            className="text-muted transition-colors hover:text-danger"
+            aria-label="Очистить историю"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
       </div>
 
       <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">

@@ -75,9 +75,19 @@ export default function LoginPage() {
           </Link>
 
           <h1 className="mt-7 text-2xl font-bold tracking-tight">С возвращением</h1>
-          <p className="mt-1 text-sm text-muted">Войдите, чтобы продолжить обучение</p>
+          <p className="mt-1 text-sm text-muted">Войди чтобы продолжить обучение</p>
 
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <div className="mt-6">
+            <GoogleButton onCredential={handleGoogleCredential} text="signin_with" />
+          </div>
+
+          <div className="my-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted">или</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="relative">
               <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
               <input
@@ -139,14 +149,6 @@ export default function LoginPage() {
               </Link>
             </p>
           </form>
-
-          <div className="my-5 flex items-center gap-3">
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-xs text-muted">или</span>
-            <div className="h-px flex-1 bg-border" />
-          </div>
-
-          <GoogleButton onCredential={handleGoogleCredential} text="signin_with" />
         </Card>
       </motion.div>
     </main>
