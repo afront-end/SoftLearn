@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { CheckCircle2, ChevronRight, Loader2, XCircle } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -9,12 +9,14 @@ import { CodeExercise } from "@/components/practice/code-exercise";
 import { McqExercise } from "@/components/practice/mcq-exercise";
 import { OpenExercise } from "@/components/practice/open-exercise";
 import { Navbar } from "@/components/navbar";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { api, ApiError, ExerciseCheckOut, ExerciseOut } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 
 export default function PracticePage() {
   const { lessonSlug } = useParams<{ lessonSlug: string }>();
   const router = useRouter();
+  const reduce = useReducedMotion();
   const token = useAuthStore((s) => s.token);
 
   const [exercises, setExercises] = useState<ExerciseOut[] | null>(null);
@@ -65,7 +67,7 @@ export default function PracticePage() {
     return (
       <>
         <Navbar />
-        <p className="mt-6 text-center text-red-500">{error}</p>
+        <p className="mt-6 text-center text-danger">{error}</p>
       </>
     );
   }
@@ -86,7 +88,7 @@ export default function PracticePage() {
           <p className="text-muted">В этом уроке нет задач для практики.</p>
           <button
             onClick={() => router.push(`/lessons/${lessonSlug}/test`)}
-            className="mt-4 rounded-xl bg-gradient-to-r from-primary to-primary-2 px-4 py-2 text-sm font-medium text-white"
+            className="mt-4 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
           >
             Перейти к тесту →
           </button>
@@ -99,18 +101,28 @@ export default function PracticePage() {
     <>
       <Navbar />
       <main className="mx-auto max-w-2xl flex-1 px-6 py-10">
-        <div className="mb-4 flex items-center justify-between text-sm text-muted">
+        <Breadcrumb
+          items={[
+            { label: "softlearn", href: "/" },
+            { label: lessonSlug, href: `/lessons/${lessonSlug}` },
+            { label: "practice.test" },
+          ]}
+        />
+
+        <div className="mb-4 mt-4 flex items-center justify-between font-mono text-[12px] text-muted">
           <span>
-            Задача {index + 1} / {exercises.length}
+            задача {index + 1} / {exercises.length}
           </span>
-          <span className="rounded-full bg-foreground/5 px-2 py-0.5">{current.type}</span>
+          <span className="rounded-md border border-border bg-surface-2 px-2 py-0.5 text-ai">
+            {current.type}
+          </span>
         </div>
 
         <motion.div
           key={current.id}
-          initial={{ opacity: 0, y: 12 }}
+          initial={reduce ? false : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-2xl p-6"
+          className="panel rounded-xl p-6"
         >
           <p className="font-medium">{current.question}</p>
 
@@ -135,16 +147,20 @@ export default function PracticePage() {
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`mt-4 flex gap-2 rounded-xl p-3 text-sm ${
-                result.correct
-                  ? "bg-emerald-500/10 text-emerald-500"
-                  : "bg-red-500/10 text-red-500"
+              className={`mt-4 flex gap-2 rounded-lg p-3 text-sm ${
+                result.correct ? "bg-success/10 text-success" : "bg-danger/10 text-danger"
               }`}
             >
-              {result.correct ? <CheckCircle2 size={16} className="mt-0.5 shrink-0" /> : <XCircle size={16} className="mt-0.5 shrink-0" />}
+              {result.correct ? (
+                <CheckCircle2 size={16} className="mt-0.5 shrink-0" />
+              ) : (
+                <XCircle size={16} className="mt-0.5 shrink-0" />
+              )}
               <div>
                 <p className="font-medium">{result.correct ? "Верно!" : "Неверно"}</p>
-                {result.correct_answer && <p className="mt-1 text-muted">Правильный ответ: {result.correct_answer}</p>}
+                {result.correct_answer && (
+                  <p className="mt-1 text-muted">Правильный ответ: {result.correct_answer}</p>
+                )}
                 {result.explanation && <p className="mt-1 text-muted">{result.explanation}</p>}
               </div>
             </motion.div>
@@ -155,7 +171,7 @@ export default function PracticePage() {
               <button
                 onClick={handleCheck}
                 disabled={checking || !answer.trim()}
-                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-2 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 {checking && <Loader2 size={14} className="animate-spin" />}
                 Проверить
@@ -163,7 +179,7 @@ export default function PracticePage() {
             ) : (
               <button
                 onClick={handleNext}
-                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-2 px-4 py-2 text-sm font-medium text-white"
+                className="flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
               >
                 {index + 1 < exercises.length ? "Следующая задача" : "К тесту"}
                 <ChevronRight size={14} />

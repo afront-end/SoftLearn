@@ -22,16 +22,17 @@ export function ThemeToggle() {
       type="button"
       aria-label="Переключить тему"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-foreground backdrop-blur-sm transition-colors hover:bg-white/10"
+      className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface text-foreground transition-colors hover:border-accent/50 hover:text-accent"
     >
-      <motion.div
+      <motion.span
         key={isDark ? "moon" : "sun"}
         initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
         animate={{ rotate: 0, opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.25 }}
+        className="flex"
       >
-        {isDark ? <Moon size={18} /> : <Sun size={18} />}
-      </motion.div>
+        {isDark ? <Moon size={16} /> : <Sun size={16} />}
+      </motion.span>
     </button>
   );
 }

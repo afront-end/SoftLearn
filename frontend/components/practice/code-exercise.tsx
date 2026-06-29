@@ -18,7 +18,15 @@ export function CodeExercise({ value, disabled, onChange, language = "javascript
   const extensions = [language === "python" ? python() : javascript({ jsx: true })];
 
   return (
-    <div className="overflow-hidden rounded-xl border border-card-border">
+    <div className="overflow-hidden rounded-lg border border-border">
+      <div className="flex items-center gap-2 border-b border-border bg-surface-2 px-3 py-1.5">
+        <span className="code-dot h-2 w-2" style={{ background: "var(--danger)" }} />
+        <span className="code-dot h-2 w-2" style={{ background: "var(--warning)" }} />
+        <span className="code-dot h-2 w-2" style={{ background: "var(--success)" }} />
+        <span className="ml-1 font-mono text-[10px] text-muted">
+          solution.{language === "python" ? "py" : "js"}
+        </span>
+      </div>
       <CodeMirror
         value={value}
         height="180px"

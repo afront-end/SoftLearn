@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowRight, Code2, GraduationCap, Loader2, Sparkles } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowRight, GraduationCap, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -10,11 +10,14 @@ import { AssistantWidget } from "@/components/assistant-widget";
 import { CareerQuizBanner } from "@/components/career-quiz-banner";
 import { ItDirections } from "@/components/it-directions";
 import { Navbar } from "@/components/navbar";
+import { HeroCodeBackdrop } from "@/components/ui/hero-code-backdrop";
+import { TypingHeading } from "@/components/ui/typing-heading";
 import { api, ApiError, CourseOut } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 
 export default function Home() {
   const router = useRouter();
+  const reduce = useReducedMotion();
   const token = useAuthStore((s) => s.token);
   const user = useAuthStore((s) => s.user);
   const [courses, setCourses] = useState<CourseOut[] | null>(null);
@@ -37,31 +40,31 @@ export default function Home() {
     <>
       <Navbar />
       <main className="relative flex-1 overflow-hidden">
-        <div className="aurora-bg" />
+        <section className="relative mx-auto max-w-3xl px-6 pt-16 pb-12 text-center">
+          <HeroCodeBackdrop />
 
-        <section className="mx-auto max-w-3xl px-6 pt-20 pb-12 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={reduce ? false : { opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="mx-auto mb-5 flex w-fit items-center gap-2 rounded-full border border-card-border bg-foreground/5 px-4 py-1.5 text-sm text-muted"
+            className="mx-auto mb-5 flex w-fit items-center gap-2 rounded-md border border-border bg-surface px-3 py-1 font-mono text-[12px] text-muted"
           >
-            <Sparkles size={14} className="text-primary" /> Один путь. Без хаоса источников.
+            <span className="text-success">$</span> npm run learn -- --no-chaos
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={reduce ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-4xl font-bold tracking-tight sm:text-5xl"
           >
             Учись программировать
             <br />
-            <span className="gradient-text">структурно, а не хаотично</span>
+            <TypingHeading text="структурно, а не хаотично" className="text-gradient" />
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={reduce ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mx-auto mt-5 max-w-xl text-muted"
@@ -73,21 +76,21 @@ export default function Home() {
 
           {!token && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={reduce ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
               className="mt-8 flex justify-center gap-3"
             >
               <Link
                 href="/register"
-                className="group flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-2 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-primary/30 transition-all hover:shadow-primary/50"
+                className="group flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
               >
                 Начать бесплатно
                 <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
               </Link>
               <Link
                 href="/login"
-                className="rounded-xl border border-card-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-foreground/5"
+                className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium transition-colors hover:border-accent/50"
               >
                 Войти
               </Link>
@@ -105,7 +108,7 @@ export default function Home() {
         <section className="mx-auto max-w-4xl px-6 pb-20">
           {token && <h2 className="mb-6 text-center text-2xl font-bold tracking-tight">Доступные курсы</h2>}
 
-          {error && <p className="text-center text-red-500">{error}</p>}
+          {error && <p className="text-center text-danger">{error}</p>}
 
           {!courses && !error && (
             <div className="flex justify-center py-10">
@@ -117,27 +120,33 @@ export default function Home() {
             {courses?.map((course, i) => (
               <motion.div
                 key={course.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
+                initial={reduce ? false : { opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ delay: i * 0.08, duration: 0.5 }}
               >
                 <Link
                   href={`/courses/${course.slug}`}
-                  className="glass-card group flex h-full flex-col gap-3 rounded-2xl p-6 transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10"
+                  className="code-window group flex h-full flex-col transition-all hover:-translate-y-1 hover:border-accent/50 hover:shadow-lg"
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-2 text-xl">
-                    {course.icon ?? <Code2 size={20} className="text-white" />}
+                  <div className="code-window-titlebar justify-start">
+                    <span className="code-dot" style={{ background: "var(--danger)" }} />
+                    <span className="code-dot" style={{ background: "var(--warning)" }} />
+                    <span className="code-dot" style={{ background: "var(--success)" }} />
+                    <span className="ml-2 truncate font-mono text-[11px] text-muted">{course.slug}.dir</span>
                   </div>
-                  <h3 className="text-lg font-semibold">{course.title}</h3>
-                  <p className="text-sm text-muted">{course.description}</p>
-                  <span className="mt-auto flex items-center gap-1 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
-                    Перейти <ArrowRight size={14} />
-                  </span>
+                  <div className="flex flex-1 flex-col gap-2 p-5">
+                    <h3 className="font-mono text-lg font-semibold">{course.title}</h3>
+                    <p className="text-sm text-muted">{course.description}</p>
+                    <span className="mt-auto flex items-center gap-1 text-sm font-medium text-accent opacity-0 transition-opacity group-hover:opacity-100">
+                      Перейти <ArrowRight size={14} />
+                    </span>
+                  </div>
                 </Link>
                 {user?.experienced && (
                   <Link
                     href={`/placement/${course.slug}`}
-                    className="mt-2 flex items-center justify-center gap-1.5 rounded-xl border border-card-border px-3 py-2 text-xs font-medium text-muted transition-colors hover:border-primary/40 hover:text-primary"
+                    className="mt-2 flex items-center justify-center gap-1.5 rounded-lg border border-border px-3 py-2 text-xs font-medium text-muted transition-colors hover:border-accent/40 hover:text-accent"
                   >
                     <GraduationCap size={14} /> Пройти вступительный тест по этому направлению
                   </Link>

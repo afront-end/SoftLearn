@@ -1,22 +1,24 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Award, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Navbar } from "@/components/navbar";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { api, ApiError, PlacementQuestion, PlacementResultOut } from "@/lib/api";
 
 const LEVEL_LABEL: Record<string, string> = {
-  beginner: "Начальный",
-  intermediate: "Средний",
-  advanced: "Продвинутый",
+  beginner: "начальный",
+  intermediate: "средний",
+  advanced: "продвинутый",
 };
 
 export default function PlacementPage() {
   const { courseSlug } = useParams<{ courseSlug: string }>();
+  const reduce = useReducedMotion();
   const [questions, setQuestions] = useState<PlacementQuestion[] | null>(null);
   const [answers, setAnswers] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +55,7 @@ export default function PlacementPage() {
     return (
       <>
         <Navbar />
-        <p className="mt-6 text-center text-red-500">{error}</p>
+        <p className="mt-6 text-center text-danger">{error}</p>
       </>
     );
   }
@@ -72,26 +74,37 @@ export default function PlacementPage() {
         <Navbar />
         <main className="mx-auto max-w-xl flex-1 px-6 py-10">
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={reduce ? false : { opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card rounded-2xl p-8 text-center"
+            className="code-window panel-shadow text-center"
           >
-            <Award size={48} className="mx-auto text-primary" />
-            <h1 className="mt-4 text-2xl font-bold">{result.score}%</h1>
-            <p className="mt-1 text-muted">
-              Ваш уровень: <span className="font-medium text-foreground">{LEVEL_LABEL[result.result_level]}</span>
-            </p>
-            {result.unlocked_stacks.length > 0 && (
-              <p className="mt-3 text-sm text-muted">
-                Разблокированы стеки: {result.unlocked_stacks.join(", ")}
+            <div className="code-window-titlebar justify-start">
+              <span className="code-dot" style={{ background: "var(--danger)" }} />
+              <span className="code-dot" style={{ background: "var(--warning)" }} />
+              <span className="code-dot" style={{ background: "var(--success)" }} />
+              <span className="ml-2 font-mono text-[11px] text-muted">placement.json</span>
+            </div>
+            <div className="p-8">
+              <Award size={48} className="mx-auto text-accent" />
+              <h1 className="mt-4 font-mono text-2xl font-bold">{result.score}%</h1>
+              <p className="mt-1 text-muted">
+                Ваш уровень:{" "}
+                <span className="font-mono font-medium text-foreground">
+                  {LEVEL_LABEL[result.result_level]}
+                </span>
               </p>
-            )}
-            <Link
-              href={`/courses/${courseSlug}`}
-              className="mt-6 inline-flex rounded-xl bg-gradient-to-r from-primary to-primary-2 px-4 py-2 text-sm font-medium text-white"
-            >
-              К курсу →
-            </Link>
+              {result.unlocked_stacks.length > 0 && (
+                <p className="mt-3 text-sm text-muted">
+                  Разблокированы стеки: {result.unlocked_stacks.join(", ")}
+                </p>
+              )}
+              <Link
+                href={`/courses/${courseSlug}`}
+                className="mt-6 inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
+              >
+                К курсу →
+              </Link>
+            </div>
           </motion.div>
         </main>
       </>
@@ -104,22 +117,24 @@ export default function PlacementPage() {
     <>
       <Navbar />
       <main className="mx-auto max-w-2xl flex-1 px-6 py-10">
-        <h1 className="gradient-text text-2xl font-bold">Вступительный тест</h1>
+        <Breadcrumb items={[{ label: "softlearn", href: "/" }, { label: courseSlug, href: `/courses/${courseSlug}` }, { label: "placement.run" }]} />
+
+        <h1 className="mt-4 text-2xl font-bold">Вступительный тест</h1>
         <p className="mt-1 text-sm text-muted">
           Вопросы идут от простого к сложному. Так мы поймём, какие темы вы уже знаете, и откроем нужные стеки.
         </p>
 
-        <div className="mt-6 space-y-5">
+        <div className="mt-6 space-y-4">
           {questions.map((q, qIndex) => (
             <motion.div
               key={qIndex}
-              initial={{ opacity: 0, y: 12 }}
+              initial={reduce ? false : { opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: qIndex * 0.05 }}
-              className="glass-card rounded-2xl p-5"
+              className="panel rounded-xl p-5"
             >
               <p className="font-medium">
-                {qIndex + 1}. {q.question}
+                <span className="font-mono text-muted">{qIndex + 1}.</span> {q.question}
               </p>
               <div className="mt-3 space-y-2">
                 {q.options.map((option) => (
@@ -127,10 +142,10 @@ export default function PlacementPage() {
                     key={option}
                     type="button"
                     onClick={() => selectAnswer(qIndex, option)}
-                    className={`w-full rounded-xl border px-4 py-2.5 text-left text-sm transition-colors ${
+                    className={`w-full rounded-lg border px-4 py-2.5 text-left text-sm transition-colors ${
                       answers[qIndex] === option
-                        ? "border-primary bg-primary/10"
-                        : "border-card-border hover:border-primary/40"
+                        ? "border-accent bg-accent/10"
+                        : "border-border hover:border-accent/40"
                     }`}
                   >
                     {option}
@@ -144,7 +159,7 @@ export default function PlacementPage() {
         <button
           onClick={handleSubmit}
           disabled={!allAnswered || submitting}
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-2 px-4 py-3 text-sm font-medium text-white disabled:opacity-50"
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {submitting && <Loader2 size={14} className="animate-spin" />}
           Завершить тест

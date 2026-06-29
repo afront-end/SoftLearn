@@ -1,13 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { AlertCircle, ArrowRight, Eye, EyeOff, KeyRound, Lock, Mail, Sparkles, User } from "lucide-react";
+import { AlertCircle, ArrowRight, Eye, EyeOff, KeyRound, Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
 import { GoogleButton } from "@/components/auth/google-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Logo } from "@/components/ui/logo";
 import { api, ApiError } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 
@@ -86,10 +87,10 @@ export default function RegisterPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <main className="relative flex flex-1 items-center justify-center overflow-hidden p-6">
-      <div className="aurora-bg" />
+  const stepFiles = ["email.ts", "verify.ts", "profile.ts"];
 
+  return (
+    <main className="dot-grid relative flex flex-1 items-center justify-center overflow-hidden p-6">
       <div className="absolute right-6 top-6">
         <ThemeToggle />
       </div>
@@ -98,199 +99,203 @@ export default function RegisterPage() {
         initial={{ opacity: 0, y: 24, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="glass-card w-full max-w-sm rounded-2xl p-8 shadow-2xl"
+        className="code-window panel-shadow w-full max-w-sm"
       >
-        <div className="mb-6 flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary-2">
-            <Sparkles size={18} className="text-white" />
+        <div className="code-window-titlebar justify-start">
+          <span className="code-dot" style={{ background: "var(--danger)" }} />
+          <span className="code-dot" style={{ background: "var(--warning)" }} />
+          <span className="code-dot" style={{ background: "var(--success)" }} />
+          <span className="ml-2 font-mono text-[11px] text-muted">{stepFiles[step - 1]}</span>
+        </div>
+
+        <div className="p-8">
+          <Logo />
+
+          <h1 className="mt-6 text-2xl font-bold tracking-tight">Начни свой путь</h1>
+          <p className="mt-1 text-sm text-muted">Один структурированный курс, без лишних метаний</p>
+
+          <div className="mt-5 flex items-center gap-2">
+            {[1, 2, 3].map((s) => (
+              <div
+                key={s}
+                className={`h-1.5 flex-1 rounded-full transition-colors ${
+                  s <= step ? "bg-accent" : "bg-border"
+                }`}
+              />
+            ))}
           </div>
-          <span className="text-lg font-semibold">SoftLearn</span>
-        </div>
 
-        <h1 className="text-2xl font-bold tracking-tight">Начни свой путь</h1>
-        <p className="mt-1 text-sm text-muted">Один структурированный курс — без лишних метаний</p>
+          {step === 1 && (
+            <form onSubmit={handleStartRegister} className="mt-6 space-y-4">
+              <div className="relative">
+                <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+                <input
+                  type="email"
+                  placeholder="Email (gmail.com)"
+                  required
+                  pattern=".+@gmail\.com"
+                  title="Нужен email на gmail.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-10 py-2.5 text-sm outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/25"
+                />
+              </div>
 
-        <div className="mt-5 flex items-center gap-2">
-          {[1, 2, 3].map((s) => (
-            <div
-              key={s}
-              className={`h-1.5 flex-1 rounded-full transition-colors ${
-                s <= step ? "bg-primary" : "bg-card-border"
-              }`}
-            />
-          ))}
-        </div>
-
-        {step === 1 && (
-          <form onSubmit={handleStartRegister} className="mt-6 space-y-4">
-            <div className="relative">
-              <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-              <input
-                type="email"
-                placeholder="Email (gmail.com)"
-                required
-                pattern=".+@gmail\.com"
-                title="Нужен email на gmail.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-card-border bg-background/50 px-10 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/30"
-              />
-            </div>
-
-            {error && (
-              <motion.p
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                className="flex items-center gap-1.5 text-sm text-red-500"
-              >
-                <AlertCircle size={14} /> {error}
-              </motion.p>
-            )}
-
-            <motion.button
-              type="submit"
-              disabled={loading}
-              whileTap={{ scale: 0.98 }}
-              className="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-2 px-3 py-2.5 text-sm font-medium text-white shadow-lg shadow-primary/30 transition-all hover:shadow-primary/50 disabled:opacity-50"
-            >
-              {loading ? "Отправляем код..." : "Отправить код"}
-              {!loading && (
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="flex items-center gap-1.5 text-sm text-danger"
+                >
+                  <AlertCircle size={14} /> {error}
+                </motion.p>
               )}
-            </motion.button>
 
-            <p className="text-center text-sm text-muted">
-              Уже есть аккаунт?{" "}
-              <Link href="/login" className="font-medium text-primary hover:underline">
-                Войти
-              </Link>
-            </p>
-          </form>
-        )}
-
-        {step === 2 && (
-          <form onSubmit={handleVerifyCode} className="mt-6 space-y-4">
-            <p className="text-sm text-muted">
-              Мы отправили 6-значный код на <span className="text-foreground">{email}</span>
-            </p>
-            <div className="relative">
-              <KeyRound size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-              <input
-                type="text"
-                inputMode="numeric"
-                placeholder="6-значный код"
-                required
-                minLength={6}
-                maxLength={6}
-                pattern="\d{6}"
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                className="w-full rounded-xl border border-card-border bg-background/50 px-10 py-2.5 text-sm tracking-widest outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/30"
-              />
-            </div>
-
-            {error && (
-              <motion.p
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                className="flex items-center gap-1.5 text-sm text-red-500"
+              <motion.button
+                type="submit"
+                disabled={loading}
+                whileTap={{ scale: 0.98 }}
+                className="group flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-3 py-2.5 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
               >
-                <AlertCircle size={14} /> {error}
-              </motion.p>
-            )}
+                {loading ? "Отправляем код..." : "Отправить код"}
+                {!loading && (
+                  <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
+                )}
+              </motion.button>
 
-            <motion.button
-              type="submit"
-              disabled={loading}
-              whileTap={{ scale: 0.98 }}
-              className="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-2 px-3 py-2.5 text-sm font-medium text-white shadow-lg shadow-primary/30 transition-all hover:shadow-primary/50 disabled:opacity-50"
-            >
-              {loading ? "Проверяем..." : "Подтвердить"}
-              {!loading && (
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
+              <p className="text-center text-sm text-muted">
+                Уже есть аккаунт?{" "}
+                <Link href="/login" className="font-medium text-accent hover:underline">
+                  Войти
+                </Link>
+              </p>
+            </form>
+          )}
+
+          {step === 2 && (
+            <form onSubmit={handleVerifyCode} className="mt-6 space-y-4">
+              <p className="text-sm text-muted">
+                Мы отправили 6-значный код на <span className="text-foreground">{email}</span>
+              </p>
+              <div className="relative">
+                <KeyRound size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="6-значный код"
+                  required
+                  minLength={6}
+                  maxLength={6}
+                  pattern="\d{6}"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                  className="w-full rounded-lg border border-border bg-background px-10 py-2.5 text-sm tracking-widest outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/25"
+                />
+              </div>
+
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="flex items-center gap-1.5 text-sm text-danger"
+                >
+                  <AlertCircle size={14} /> {error}
+                </motion.p>
               )}
-            </motion.button>
 
-            <button
-              type="button"
-              onClick={() => setStep(1)}
-              className="w-full text-center text-sm text-muted hover:text-foreground"
-            >
-              Изменить email
-            </button>
-          </form>
-        )}
+              <motion.button
+                type="submit"
+                disabled={loading}
+                whileTap={{ scale: 0.98 }}
+                className="group flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-3 py-2.5 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                {loading ? "Проверяем..." : "Подтвердить"}
+                {!loading && (
+                  <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
+                )}
+              </motion.button>
 
-        {step === 3 && (
-          <form onSubmit={handleCompleteRegister} className="mt-6 space-y-4">
-            <div className="relative">
-              <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-              <input
-                type="text"
-                placeholder="Имя"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-xl border border-card-border bg-background/50 px-10 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/30"
-              />
-            </div>
-
-            <div className="relative">
-              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Пароль (мин. 8 символов)"
-                required
-                minLength={8}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-card-border bg-background/50 px-10 py-2.5 text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/30"
-              />
               <button
                 type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground"
-                aria-label="Показать пароль"
+                onClick={() => setStep(1)}
+                className="w-full text-center text-sm text-muted hover:text-foreground"
               >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                Изменить email
               </button>
-            </div>
+            </form>
+          )}
 
-            {error && (
-              <motion.p
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                className="flex items-center gap-1.5 text-sm text-red-500"
-              >
-                <AlertCircle size={14} /> {error}
-              </motion.p>
-            )}
+          {step === 3 && (
+            <form onSubmit={handleCompleteRegister} className="mt-6 space-y-4">
+              <div className="relative">
+                <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+                <input
+                  type="text"
+                  placeholder="Имя"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-10 py-2.5 text-sm outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/25"
+                />
+              </div>
 
-            <motion.button
-              type="submit"
-              disabled={loading}
-              whileTap={{ scale: 0.98 }}
-              className="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-2 px-3 py-2.5 text-sm font-medium text-white shadow-lg shadow-primary/30 transition-all hover:shadow-primary/50 disabled:opacity-50"
-            >
-              {loading ? "Регистрируем..." : "Завершить регистрацию"}
-              {!loading && (
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
+              <div className="relative">
+                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Пароль (мин. 8 символов)"
+                  required
+                  minLength={8}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-10 py-2.5 text-sm outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/25"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground"
+                  aria-label="Показать пароль"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="flex items-center gap-1.5 text-sm text-danger"
+                >
+                  <AlertCircle size={14} /> {error}
+                </motion.p>
               )}
-            </motion.button>
-          </form>
-        )}
 
-        {step === 1 && (
-          <>
-            <div className="my-5 flex items-center gap-3">
-              <div className="h-px flex-1 bg-card-border" />
-              <span className="text-xs text-muted">или</span>
-              <div className="h-px flex-1 bg-card-border" />
-            </div>
+              <motion.button
+                type="submit"
+                disabled={loading}
+                whileTap={{ scale: 0.98 }}
+                className="group flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-3 py-2.5 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                {loading ? "Регистрируем..." : "Завершить регистрацию"}
+                {!loading && (
+                  <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
+                )}
+              </motion.button>
+            </form>
+          )}
 
-            <GoogleButton onCredential={handleGoogleCredential} text="signup_with" />
-          </>
-        )}
+          {step === 1 && (
+            <>
+              <div className="my-5 flex items-center gap-3">
+                <div className="h-px flex-1 bg-border" />
+                <span className="font-mono text-xs text-muted">или</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+
+              <GoogleButton onCredential={handleGoogleCredential} text="signup_with" />
+            </>
+          )}
+        </div>
       </motion.div>
     </main>
   );

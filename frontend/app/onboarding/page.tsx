@@ -1,11 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { GraduationCap, Loader2, Rocket, Sparkles } from "lucide-react";
+import { GraduationCap, Loader2, Rocket } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Logo } from "@/components/ui/logo";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 
@@ -28,8 +29,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="relative flex flex-1 items-center justify-center overflow-hidden p-6">
-      <div className="aurora-bg" />
+    <main className="dot-grid relative flex flex-1 items-center justify-center overflow-hidden p-6">
       <div className="absolute right-6 top-6">
         <ThemeToggle />
       </div>
@@ -38,36 +38,43 @@ export default function OnboardingPage() {
         initial={{ opacity: 0, y: 24, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="glass-card w-full max-w-md rounded-2xl p-8 text-center shadow-2xl"
+        className="code-window panel-shadow w-full max-w-md text-center"
       >
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-2">
-          <Sparkles size={22} className="text-white" />
+        <div className="code-window-titlebar justify-start">
+          <span className="code-dot" style={{ background: "var(--danger)" }} />
+          <span className="code-dot" style={{ background: "var(--warning)" }} />
+          <span className="code-dot" style={{ background: "var(--success)" }} />
+          <span className="ml-2 font-mono text-[11px] text-muted">onboarding.ts</span>
         </div>
-        <h1 className="mt-4 text-2xl font-bold">
-          {user ? `Привет, ${user.name}!` : "Привет!"}
-        </h1>
-        <p className="mt-2 text-muted">Вы уже умеете программировать?</p>
 
-        <div className="mt-6 space-y-3">
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            disabled={loading !== null}
-            onClick={() => handleChoice(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-2 px-4 py-3 text-sm font-medium text-white disabled:opacity-60"
-          >
-            {loading === "yes" ? <Loader2 size={16} className="animate-spin" /> : <GraduationCap size={16} />}
-            Да, пройти вступительный тест
-          </motion.button>
+        <div className="p-8">
+          <div className="mx-auto w-fit">
+            <Logo showWordmark={false} />
+          </div>
+          <h1 className="mt-4 text-2xl font-bold">{user ? `Привет, ${user.name}!` : "Привет!"}</h1>
+          <p className="mt-2 text-muted">Вы уже умеете программировать?</p>
 
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            disabled={loading !== null}
-            onClick={() => handleChoice(false)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-card-border px-4 py-3 text-sm font-medium hover:bg-foreground/5 disabled:opacity-60"
-          >
-            {loading === "no" ? <Loader2 size={16} className="animate-spin" /> : <Rocket size={16} />}
-            Нет, начну с самого начала
-          </motion.button>
+          <div className="mt-6 space-y-3">
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              disabled={loading !== null}
+              onClick={() => handleChoice(true)}
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+            >
+              {loading === "yes" ? <Loader2 size={16} className="animate-spin" /> : <GraduationCap size={16} />}
+              Да, пройти вступительный тест
+            </motion.button>
+
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              disabled={loading !== null}
+              onClick={() => handleChoice(false)}
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-border px-4 py-3 text-sm font-medium transition-colors hover:border-accent/50 disabled:opacity-60"
+            >
+              {loading === "no" ? <Loader2 size={16} className="animate-spin" /> : <Rocket size={16} />}
+              Нет, начну с самого начала
+            </motion.button>
+          </div>
         </div>
       </motion.div>
     </main>

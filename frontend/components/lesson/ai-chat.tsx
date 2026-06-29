@@ -68,28 +68,28 @@ export function AiChat({ lessonSlug }: Props) {
   }
 
   return (
-    <div className="glass-card flex h-full flex-col rounded-2xl">
-      <div className="flex items-center justify-between border-b border-card-border px-4 py-3">
+    <div className="code-window flex h-full flex-col">
+      <div className="code-window-titlebar justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-2">
-            <Bot size={14} className="text-white" />
-          </div>
-          <span className="text-sm font-medium">AI-наставник</span>
+          <span className="code-dot" style={{ background: "var(--danger)" }} />
+          <span className="code-dot" style={{ background: "var(--warning)" }} />
+          <span className="code-dot" style={{ background: "var(--success)" }} />
+          <span className="ml-1 flex items-center gap-1.5 font-mono text-[11px] text-muted">
+            <Bot size={12} className="text-ai" /> mentor.ts
+          </span>
         </div>
         <button
           onClick={handleClear}
-          className="text-muted transition-colors hover:text-red-500"
+          className="text-muted transition-colors hover:text-danger"
           aria-label="Очистить историю"
         >
-          <Trash2 size={14} />
+          <Trash2 size={13} />
         </button>
       </div>
 
       <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
         {messages.length === 0 && (
-          <p className="text-sm text-muted">
-            Спросите что-нибудь про этот урок — отвечу только по теме.
-          </p>
+          <p className="text-sm text-muted">Спросите что-нибудь про этот урок, отвечу только по теме.</p>
         )}
         <AnimatePresence initial={false}>
           {messages.map((m) => (
@@ -100,24 +100,20 @@ export function AiChat({ lessonSlug }: Props) {
               className={`flex gap-2 ${m.role === "user" ? "justify-end" : "justify-start"}`}
             >
               {m.role === "assistant" && (
-                <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-2">
-                  <Bot size={12} className="text-white" />
+                <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-ai/15 text-ai">
+                  <Bot size={13} />
                 </div>
               )}
               <div
-                className={`max-w-[80%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm ${
-                  m.role === "user"
-                    ? "bg-gradient-to-r from-primary to-primary-2 text-white"
-                    : "bg-foreground/5 text-foreground"
+                className={`max-w-[80%] whitespace-pre-wrap rounded-lg px-3 py-2 text-sm ${
+                  m.role === "user" ? "bg-accent text-accent-foreground" : "panel-2 text-foreground"
                 }`}
               >
-                {m.content || (
-                  <Loader2 size={14} className="animate-spin text-muted" />
-                )}
+                {m.content || <Loader2 size={14} className="animate-spin text-muted" />}
               </div>
               {m.role === "user" && (
-                <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-foreground/10">
-                  <User size={12} />
+                <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-surface-2">
+                  <User size={13} />
                 </div>
               )}
             </motion.div>
@@ -125,20 +121,20 @@ export function AiChat({ lessonSlug }: Props) {
         </AnimatePresence>
       </div>
 
-      {error && <p className="px-4 pb-2 text-xs text-red-500">{error}</p>}
+      {error && <p className="px-4 pb-2 text-xs text-danger">{error}</p>}
 
-      <form onSubmit={handleSend} className="flex gap-2 border-t border-card-border p-3">
+      <form onSubmit={handleSend} className="flex gap-2 border-t border-border p-3">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Спросите про урок..."
           disabled={streaming}
-          className="flex-1 rounded-xl border border-card-border bg-background/50 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+          className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/25"
         />
         <button
           type="submit"
           disabled={streaming || !input.trim()}
-          className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-r from-primary to-primary-2 text-white disabled:opacity-50"
+          className="flex h-9 w-9 items-center justify-center rounded-md bg-accent text-accent-foreground disabled:opacity-50"
         >
           {streaming ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
         </button>

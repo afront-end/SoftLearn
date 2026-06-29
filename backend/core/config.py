@@ -15,11 +15,11 @@ class Settings(BaseSettings):
 
     smtp_host: str = "smtp.gmail.com"
     smtp_port: int = 587
-    smtp_user: str = ""
-    smtp_password: str = ""
-    smtp_from: str = ""
+    smtp_user: str 
+    smtp_password: str 
+    smtp_from: str
 
-    google_client_id: str = ""
+    google_client_id: str 
 
 
 settings = Settings()
