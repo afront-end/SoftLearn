@@ -105,6 +105,8 @@ export interface StackWithProgress {
   description: string | null;
   order: number;
   status: "locked" | "in_progress" | "completed";
+  lesson_count: number;
+  completed_count: number;
 }
 
 export interface CourseWithStacks extends CourseOut {
@@ -116,9 +118,12 @@ export interface LessonWithProgress {
   title: string;
   slug: string;
   order: number;
+  duration_minutes: number | null;
   status: "locked" | "in_progress" | "completed";
   lesson_read: boolean;
   practice_done: boolean;
+  has_exercises: boolean;
+  has_test: boolean;
 }
 
 export interface StackLessonsOut {
@@ -127,6 +132,7 @@ export interface StackLessonsOut {
   slug: string;
   description: string | null;
   lessons: LessonWithProgress[];
+  completed_count: number;
 }
 
 export interface LessonDetail {
@@ -134,7 +140,9 @@ export interface LessonDetail {
   title: string;
   slug: string;
   order: number;
+  duration_minutes: number | null;
   content: string | null;
+  youtube_url: string | null;
   stack_slug: string;
   stack_title: string;
   lesson_read: boolean;

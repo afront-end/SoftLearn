@@ -17,3 +17,5 @@ class StackOut(BaseModel):
 
 class StackWithProgress(StackOut):
     status: str = "locked"
+    lesson_count: int = 0
+    completed_count: int = 0

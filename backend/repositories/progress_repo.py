@@ -113,3 +113,24 @@ def count_completed_lessons(db: Session, user_id: UUID, lesson_ids: list[UUID]) 
 
 def get_all_stack_progress(db: Session, user_id: UUID) -> list[StackProgress]:
     return db.query(StackProgress).filter(StackProgress.user_id == user_id).all()
+
+
+def get_completed_lesson_counts(db: Session, user_id: UUID, stack_ids: list[UUID]) -> dict[UUID, int]:
+    from models.lesson import Lesson
+    from sqlalchemy import func
+
+    if not stack_ids:
+        return {}
+
+    rows = (
+        db.query(Lesson.stack_id, func.count(UserProgress.id))
+        .join(UserProgress, UserProgress.lesson_id == Lesson.id)
+        .filter(
+            UserProgress.user_id == user_id,
+            UserProgress.status == ProgressStatus.completed,
+            Lesson.stack_id.in_(stack_ids),
+        )
+        .group_by(Lesson.stack_id)
+        .all()
+    )
+    return {stack_id: count for stack_id, count in rows}

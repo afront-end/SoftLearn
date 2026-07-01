@@ -19,19 +19,30 @@ def get_stack_lessons(db: Session, stack_slug: str, user_id: UUID) -> StackLesso
         progress_map[lessons[0].id] = progress_repo.unlock_lesson(db, user_id, lessons[0].id)
 
     lessons_out = []
+    completed_count = 0
     for lesson in lessons:
         progress = progress_map.get(lesson.id)
+        lesson_status = progress.status.value if progress else "locked"
+        if lesson_status == "completed":
+            completed_count += 1
         lessons_out.append(
             LessonWithProgress(
                 **LessonOut.model_validate(lesson).model_dump(),
-                status=progress.status.value if progress else "locked",
+                status=lesson_status,
                 lesson_read=progress.lesson_read if progress else False,
                 practice_done=progress.practice_done if progress else False,
+                has_exercises=len(lesson.exercises) > 0,
+                has_test=lesson.test is not None,
             )
         )
 
     return StackLessonsOut(
-        id=stack.id, title=stack.title, slug=stack.slug, description=stack.description, lessons=lessons_out
+        id=stack.id,
+        title=stack.title,
+        slug=stack.slug,
+        description=stack.description,
+        lessons=lessons_out,
+        completed_count=completed_count,
     )
 
 
@@ -54,6 +65,8 @@ def get_lesson_detail(db: Session, slug: str, user_id: UUID) -> LessonDetail:
         slug=lesson.slug,
         order=lesson.order,
         content=lesson.content,
+        youtube_url=lesson.youtube_url,
+        duration_minutes=lesson.duration_minutes,
         stack_slug=lesson.stack.slug,
         stack_title=lesson.stack.title,
         lesson_read=progress.lesson_read,
@@ -81,6 +94,8 @@ def mark_lesson_read(db: Session, slug: str, user_id: UUID) -> LessonDetail:
         slug=lesson.slug,
         order=lesson.order,
         content=lesson.content,
+        youtube_url=lesson.youtube_url,
+        duration_minutes=lesson.duration_minutes,
         stack_slug=lesson.stack.slug,
         stack_title=lesson.stack.title,
         lesson_read=progress.lesson_read,

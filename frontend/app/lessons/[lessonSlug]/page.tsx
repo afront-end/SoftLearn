@@ -21,6 +21,34 @@ import { Card } from "@/components/ui/card";
 import { api, ApiError, LessonDetail, LessonWithProgress } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 
+function extractYoutubeId(url: string): string | null {
+  try {
+    const u = new URL(url);
+    if (u.hostname === "youtu.be") return u.pathname.slice(1);
+    return u.searchParams.get("v");
+  } catch {
+    return null;
+  }
+}
+
+function YoutubeEmbed({ url }: { url: string }) {
+  const videoId = extractYoutubeId(url);
+  if (!videoId) return null;
+  return (
+    <div className="not-prose mb-6 overflow-hidden rounded-xl border border-border bg-black">
+      <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+        <iframe
+          className="absolute inset-0 h-full w-full"
+          src={`https://www.youtube.com/embed/${videoId}?rel=0`}
+          title="Видео к уроку"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function LessonPage() {
   const { lessonSlug } = useParams<{ lessonSlug: string }>();
   const router = useRouter();
@@ -123,6 +151,9 @@ export default function LessonPage() {
             <Card className="p-6 sm:p-8">
               <article className="lesson-content prose prose-base max-w-none dark:prose-invert">
                 <h1 className="!mt-0 text-3xl font-bold tracking-tight">{lesson.title}</h1>
+
+                {lesson.youtube_url && <YoutubeEmbed url={lesson.youtube_url} />}
+
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm, remarkMath]}
                   rehypePlugins={[rehypeKatex, rehypeHighlight]}

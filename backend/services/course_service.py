@@ -60,8 +60,16 @@ def get_course_with_stacks(db: Session, slug: str, user_id: UUID) -> CourseWithS
         progress_repo.unlock_stack(db, user_id, stacks[0].id)
         progress_map[stacks[0].id] = "in_progress"
 
+    lesson_counts = {s.id: len(s.lessons) for s in stacks}
+    completed_counts = progress_repo.get_completed_lesson_counts(db, user_id, [s.id for s in stacks])
+
     stacks_out = [
-        StackWithProgress(**StackOut.model_validate(s).model_dump(), status=progress_map.get(s.id, "locked"))
+        StackWithProgress(
+            **StackOut.model_validate(s).model_dump(),
+            status=progress_map.get(s.id, "locked"),
+            lesson_count=lesson_counts.get(s.id, 0),
+            completed_count=completed_counts.get(s.id, 0),
+        )
         for s in stacks
     ]
     return CourseWithStacks(**CourseOut.model_validate(course).model_dump(), stacks=stacks_out)
